@@ -13,19 +13,19 @@
 
 ; Returns the neighbors of a given station, could be used to get a route if done right
 ; This also returns all neighbors, even the ones going backwards or forwards
-(define (get-neighbors line station)
+(define (get-neighbours line station)
   (define edges (hash-ref line 'edges '()))
   (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) (equal? station (cadr edge)))) edges))
-       neighbors))
+       neighbors)
 
 ;returns just next station
-(define (get-neighbors-next line station)
+(define (get-neighbours-next line station)
   (define edges (hash-ref line 'edges '()))
   (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) )) edges))   
        neighbors)
 
 ;returns just previous station
-(define (get-neighbors-previous line station)
+(define (get-neighbours-previous line station)
   (define edges (hash-ref line 'edges '()))
   (define neighbors (filter (lambda (edge) (or (equal? station (cadr edge)) )) edges))   
        neighbors)
@@ -493,9 +493,9 @@
 
 ; London Overground (do it if you dare)
 
-(get-neighbors northern-line "goodge street")           ; Test: check the neighbors of a station with more than one connection, should return (("warren street" 2) ("tottenham court road" 1))
-(get-neighbors northern-line "morden")                  ; Test: check the neighbors of a station at the end of the line, should return (("south wimbledon" 3))
-(get-neighbors northern-line "high barnet")             ; Test: check the neighbors of a station at the beginning of a line, should return (("totteridge & whetstone" 4))
-(get-neighbors northern-line "camden town")             ; Test: check the neighbors of a station with more than two connections, should return (("mornington crescent" 2) ("euston" 3) ("chalk farm" 2) ("kentish town" 2))
+(get-neighbours northern-line "goodge street")           ; Test: check the neighbors of a station with more than one connection, should return (("warren street" 2) ("tottenham court road" 1))
+(get-neighbours northern-line "morden")                  ; Test: check the neighbors of a station at the end of the line, should return (("south wimbledon" 3))
+(get-neighbours northern-line "high barnet")             ; Test: check the neighbors of a station at the beginning of a line, should return (("totteridge & whetstone" 4))
+(get-neighbours northern-line "camden town")             ; Test: check the neighbors of a station with more than two connections, should return (("mornington crescent" 2) ("euston" 3) ("chalk farm" 2) ("kentish town" 2))
 (get-time northern-line "morden" "south wimbledon")   ; Test: check the weight between two staions, should return 3
 (get-time northern-line "south wimbledon" "morden")   ; Test: check if the same works but in reverse, should return 3
