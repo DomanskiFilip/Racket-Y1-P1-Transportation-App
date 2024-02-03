@@ -267,7 +267,7 @@
 (add-edge! district-line "upminster bridge" "upminster" 2)
 
 ; Elizabeth Line
-; No given off-peak times
+; No given off-peak times, left values as 0
 (define elizabeth-line (make-mutable-graph))
 (add-edge! elizabeth-line "reading" "twyford" 0)
 (add-edge! elizabeth-line "twyford" "maidenhead" 0)
