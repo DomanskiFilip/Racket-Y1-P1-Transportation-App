@@ -25,6 +25,7 @@
 
 (define output(new text-field%
     [label "  Directions: "]
+    [enabled #f]
     [parent myframe]))
                  
 (send myframe show #t)
