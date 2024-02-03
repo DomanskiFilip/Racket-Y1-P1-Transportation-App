@@ -67,16 +67,13 @@
             (strike-time (+ default-time random-strike))) ;Adds the generated number to the default time
        (hash-set! line 'edges ;Replaces the old time with the new time after the strike
                   (replace-edge (hash-ref line 'edges '())
-                                (car edge) (cadr edge) strike-time))))
-   edges)
-  line)
+                                (car edge) (cadr edge) strike-time)))) edges) line)
 
 (define (replace-edge edges station1 station2 new-time)
   (map (lambda (edge)
          (if (and (equal? (car edge) station1) (equal? (cadr edge) station2)) ; Check if the current edge matches the specified stations
-             (list station1 station2 new-time) ;If yes createa new edge with updated time
-             edge)) ;If not keep the edges the same
-       edges))
+             (list station1 station2 new-time) ;If yes createa new edge with updated time if not keep the edges the same
+             edge)) edges))
 
 ; If the program is to find connections between the lines, then the defines would have to change into 
 ; one unison name like "london-tube-network" or something like that, atm to make things clearer they 
