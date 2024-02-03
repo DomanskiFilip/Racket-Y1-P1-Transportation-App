@@ -62,8 +62,8 @@
   (define edges (hash-ref line 'edges '()))
   (for-each
    (lambda (edge)
-     (let* ((random-strike (random 4)) ;Generates a random number between 1 - 3
-            (default-time (caddr edge))
+     (let* ((random-strike (random 4)) ;Generates a random number betwen 1 - 3
+            (default-time (caddr edge)) 
             (strike-time (+ default-time random-strike))) ;Adds the generated number to the default time
        (hash-set! line 'edges ;Replaces the old time with the new time after the strike
                   (replace-edge (hash-ref line 'edges '())
