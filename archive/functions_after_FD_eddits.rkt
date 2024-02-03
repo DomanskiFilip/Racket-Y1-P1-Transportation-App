@@ -55,6 +55,14 @@
                   edges))
   time)
 
+;(define (get-line line)
+;(define how-long (length (hash-ref line 'edges '())))
+;  (define edges (hash-ref line 'edges '()))
+;  (for/list ([i how-long] (
+ ; 
+ ;  ))
+; ))
+
 
 ; If the program is to find connections between the lines, then the defines would have to change into 
 ; one unison name like "london-tube-network" or something like that, atm to make things clearer they 
