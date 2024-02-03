@@ -78,20 +78,6 @@
 ; one unison name like "london-tube-network" or something like that, atm to make things clearer they 
 ; are separate to know which lines are done
 
-
-
-;get-line function displays the entire line
-(define (get-line line)
-  (define how-long (length (hash-ref line 'edges '())))
-  (define edges (hash-ref line 'edges '()))
-  (for ([i (in-range how-long)])
-    (let ([edge (list-ref edges i)])
-      (let ([source (car edge)]
-            [destination (cadr edge)]
-            [time (caddr edge)])
-        (printf "~a -> ~a : ~a\n" source destination time)))))
-
-
 ; Northern Line
 (define northern-line (make-mutable-graph))
 (add-edge! northern-line "high barnet" "totteridge & whetstone" 4)
