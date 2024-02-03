@@ -16,19 +16,31 @@
 (define (get-neighbours line station)
   (define edges (hash-ref line 'edges '()))
   (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) (equal? station (cadr edge)))) edges))
-       neighbors)
+  (map (lambda (neighbour)
+         (if (equal? station (car neighbour))
+             (list (cadr neighbour) (caddr neighbour))
+             (list (car neighbour) (caddr neighbour))))
+       neighbors))
 
 ;returns just next station
 (define (get-neighbours-next line station)
   (define edges (hash-ref line 'edges '()))
-  (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) )) edges))   
-       neighbors)
+  (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) )) edges))
+  (map (lambda (neighbour)
+         (if (equal? station (car neighbour))
+             (list (cadr neighbour) (caddr neighbour))
+             (list (car neighbour) (caddr neighbour))))
+       neighbors))
 
 ;returns just previous station
 (define (get-neighbours-previous line station)
   (define edges (hash-ref line 'edges '()))
-  (define neighbors (filter (lambda (edge) (or (equal? station (cadr edge)) )) edges))   
-       neighbors)
+  (define neighbors (filter (lambda (edge) (or (equal? station (cadr edge)) )) edges))
+  (map (lambda (neighbour)
+         (if (equal? station (car neighbour))
+             (list (cadr neighbour) (caddr neighbour))
+             (list (car neighbour) (caddr neighbour))))
+       neighbors))
 
 
 ; Gets the weight (time) between the vertexes (stations), could be used to get the approximate time 

@@ -7,32 +7,53 @@
   (make-hash '()))
 
 ; Adds the edge (connection between stations) to the vertexes (stations)
-(define (add-edge! graph vertex1 vertex2 weight)
-  (define new-edges (cons (list vertex1 vertex2 weight) (hash-ref graph 'edges '())))
-  (hash-set! graph 'edges new-edges))
+(define (add-edge! line station1 station2 time)
+  (define new-edges (cons (list station1 station2 time) (hash-ref line 'edges '())))
+  (hash-set! line 'edges new-edges))
 
 ; Returns the neighbors of a given station, could be used to get a route if done right
 ; This also returns all neighbors, even the ones going backwards or forwards
-(define (get-neighbors graph vertex)
-  (define edges (hash-ref graph 'edges '()))
-  (define neighbors (filter (lambda (edge) (or (equal? vertex (car edge)) (equal? vertex (cadr edge)))) edges))
-  (map (lambda (neighbor) 
-         (if (equal? vertex (car neighbor))
-             (list (cadr neighbor) (caddr neighbor))
-             (list (car neighbor) (caddr neighbor))))
+(define (get-neighbours line station)
+  (define edges (hash-ref line 'edges '()))
+  (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) (equal? station (cadr edge)))) edges))
+  (map (lambda (neighbour)
+         (if (equal? station (car neighbour))
+             (list (cadr neighbour) (caddr neighbour))
+             (list (car neighbour) (caddr neighbour))))
        neighbors))
+
+;returns just next station
+(define (get-neighbours-next line station)
+  (define edges (hash-ref line 'edges '()))
+  (define neighbors (filter (lambda (edge) (or (equal? station (car edge)) )) edges))
+  (map (lambda (neighbour)
+         (if (equal? station (car neighbour))
+             (list (cadr neighbour) (caddr neighbour))
+             (list (car neighbour) (caddr neighbour))))
+       neighbors))
+
+;returns just previous station
+(define (get-neighbours-previous line station)
+  (define edges (hash-ref line 'edges '()))
+  (define neighbors (filter (lambda (edge) (or (equal? station (cadr edge)) )) edges))
+  (map (lambda (neighbour)
+         (if (equal? station (car neighbour))
+             (list (cadr neighbour) (caddr neighbour))
+             (list (car neighbour) (caddr neighbour))))
+       neighbors))
+
 
 ; Gets the weight (time) between the vertexes (stations), could be used to get the approximate time 
 ; to get from station a to station b
-(define (get-weight graph vertex1 vertex2)
-  (define edges (hash-ref graph 'edges '()))
-  (define weight (ormap
+(define (get-time line station1 station2)
+  (define edges (hash-ref line 'edges '()))
+  (define time (ormap
                   (lambda (edge)
-                    (if (equal? vertex1 (car edge)) 
-                        (if (equal? vertex2 (cadr edge)) (caddr edge) #f)
-                        (if (equal? vertex1 (cadr edge)) (caddr edge) #f)))
+                    (if (equal? station1 (car edge)) 
+                        (if (equal? station2 (cadr edge)) (caddr edge) #f)
+                        (if (equal? station1 (cadr edge)) (caddr edge) #f)))
                   edges))
-  weight)
+  time)
 
 
 ; If the program is to find connections between the lines, then the defines would have to change into 
@@ -484,9 +505,9 @@
 
 ; London Overground (do it if you dare)
 
-(get-neighbors northern-line "goodge street")           ; Test: check the neighbors of a station with more than one connection, should return (("warren street" 2) ("tottenham court road" 1))
-(get-neighbors northern-line "morden")                  ; Test: check the neighbors of a station at the end of the line, should return (("south wimbledon" 3))
-(get-neighbors northern-line "high barnet")             ; Test: check the neighbors of a station at the beginning of a line, should return (("totteridge & whetstone" 4))
-(get-neighbors northern-line "camden town")             ; Test: check the neighbors of a station with more than two connections, should return (("mornington crescent" 2) ("euston" 3) ("chalk farm" 2) ("kentish town" 2))
-(get-weight northern-line "morden" "south wimbledon")   ; Test: check the weight between two staions, should return 3
-(get-weight northern-line "south wimbledon" "morden")   ; Test: check if the same works but in reverse, should return 3
+(get-neighbours northern-line "goodge street")           ; Test: check the neighbors of a station with more than one connection, should return (("warren street" 2) ("tottenham court road" 1))
+(get-neighbours northern-line "morden")                  ; Test: check the neighbors of a station at the end of the line, should return (("south wimbledon" 3))
+(get-neighbours northern-line "high barnet")             ; Test: check the neighbors of a station at the beginning of a line, should return (("totteridge & whetstone" 4))
+(get-neighbours northern-line "camden town")             ; Test: check the neighbors of a station with more than two connections, should return (("mornington crescent" 2) ("euston" 3) ("chalk farm" 2) ("kentish town" 2))
+(get-time northern-line "morden" "south wimbledon")   ; Test: check the weight between two staions, should return 3
+(get-time northern-line "south wimbledon" "morden")   ; Test: check if the same works but in reverse, should return 3
