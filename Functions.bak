@@ -81,8 +81,7 @@
     (let ((chosen-line (list-ref lines (random (length lines)))))
       (printf "Strikes on: ~a\n" chosen-line))))
 
-
 (randomize-line-strike) ;Show which line has been striked
-(provide randomize-line-strike)
+
 ;(get-line northern-line) ;Displays an entire line
 

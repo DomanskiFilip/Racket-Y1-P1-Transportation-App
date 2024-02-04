@@ -1,5 +1,4 @@
 #lang racket/gui
-(require "Functions.rkt")
 
 ;Window
 (define myframe (new frame%
@@ -33,10 +32,5 @@
     [label "  Directions: "]
     [enabled #f]
     [parent myframe]))
-
-;show where are strikes
-  (define chosen-line (randomize-line-strike))
-  (define msg (format "Strikes on: ~a" chosen-line))
-  (new message% [parent myframe] [label msg])
-
+                 
 (send myframe show #t)
