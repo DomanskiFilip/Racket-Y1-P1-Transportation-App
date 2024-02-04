@@ -27,12 +27,8 @@
 (new button%
     [label "Start Journey"]
     [parent myframe]
-    [callback (lambda (value1 value2)
-    (define value1 (send start get-value))
-    (define value2 (send destination get-value))
-     (if (equal? value1 value2)
-      (send output set-value "Inputs are equal.")
-      (send output set-value "Inputs are not equal.")))]) 
+    [callback (lambda (a b)
+    (send output set-value "idk :("))]) 
 
 ;Directions output field
 (define output(new text-field%
