@@ -46,9 +46,20 @@
                   edges))
   time)
 
+; If the program is to find connections between the lines, then the defines would have to change into 
+; one unison name like "london-tube-network" or something like that, atm to make things clearer they 
+; are separate to know which lines are done
+
+;get-line function displays the entire line
+(define (get-line line)
+  (define edges (hash-ref line 'edges '()))
+  (for ([i (reverse edges)])
+    (let ([source (car i)]
+          [destination (cadr i)]
+          [time (caddr i)])
+      (printf "~a -> ~a : ~a\n" source destination time))))
 
 ;A function that generates a number between 1 - 3 and adds it to the time field simulating a strike
-
 (define (randomize-strike line)
   (define edges (hash-ref line 'edges '()))
   (for-each
@@ -66,21 +77,17 @@
              (list station1 station2 new-time) ;If yes createa new edge with updated time if not keep the edges the same
              edge)) edges))
 
-; If the program is to find connections between the lines, then the defines would have to change into 
-; one unison name like "london-tube-network" or something like that, atm to make things clearer they 
-; are separate to know which lines are done
+;A function that chooses a random line to strike
+;For now the function can only choose between Northern and Bakerloo line as Racket crashes when all the lines are in the file
+(define (randomize-line-strike)
+  (let ((lines '(northern-line bakerloo))) ;Insert all of the available lines into this list
+    (let ((chosen-line (list-ref lines (random (length lines))))) ;Randomly chooses a line
+      (cond 
+        ((equal? chosen-line 'northern-line) (randomize-strike northern-line)) ;If the randomly chosen line is Northern line strike Northern line etc.
+        ((equal? chosen-line 'bakerloo) (randomize-strike bakerloo-line))
+        (else (error "Line doesn't exist"))))))
 
+(randomize-line-strike) ;Show times on a randomly selected line after times have been updated due to a randomised strike
 
-
-;get-line function displays the entire line
-(define (get-line line)
-  (define edges (hash-ref line 'edges '()))
-  (for ([i (reverse edges)])
-    (let ([source (car i)]
-          [destination (cadr i)]
-          [time (caddr i)])
-      (printf "~a -> ~a : ~a\n" source destination time))))
-
-
-(randomize-strike northern-line) ;Replace 'northern-line' with whichever line you want to strike
 (get-line northern-line)
+
