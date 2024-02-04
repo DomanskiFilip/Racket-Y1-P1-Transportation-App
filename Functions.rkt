@@ -54,43 +54,9 @@
                   edges))
   time)
 
-
-;A function that generates a number between 1 - 3 and adds it to the time field simulating a strike
-
-(define (randomize-strike line)
-  (define edges (hash-ref line 'edges '()))
-  (for-each
-   (lambda (edge)
-     (let* ((random-strike (random 4)) ;Generates a random number between 1 - 3
-            (default-time (caddr edge))
-            (strike-time (+ default-time random-strike))) ;Adds the generated number to the default time
-       (hash-set! line 'edges ;Replaces the old time with the new time after the strike
-                  (replace-edge (hash-ref line 'edges '())
-                                (car edge) (cadr edge) strike-time)))) edges) line)
-
-(define (replace-edge edges station1 station2 new-time)
-  (map (lambda (edge)
-         (if (and (equal? (car edge) station1) (equal? (cadr edge) station2)) ; Check if the current edge matches the specified stations
-             (list station1 station2 new-time) ;If yes createa new edge with updated time if not keep the edges the same
-             edge)) edges))
-
 ; If the program is to find connections between the lines, then the defines would have to change into 
 ; one unison name like "london-tube-network" or something like that, atm to make things clearer they 
 ; are separate to know which lines are done
-
-
-
-;get-line function displays the entire line
-(define (get-line line)
-  (define how-long (length (hash-ref line 'edges '())))
-  (define edges (hash-ref line 'edges '()))
-  (for ([i (in-range how-long)])
-    (let ([edge (list-ref edges i)])
-      (let ([source (car edge)]
-            [destination (cadr edge)]
-            [time (caddr edge)])
-        (printf "~a -> ~a : ~a\n" source destination time)))))
-
 
 ; Northern Line
 (define northern-line (make-mutable-graph))
@@ -148,4 +114,59 @@
 (add-edge! northern-line "colliers wood" "south wimbledon" 2)
 (add-edge! northern-line "south wimbledon" "morden" 3)
 
-(randomize-strike northern-line) ;Replace 'northern-line' with whichever line you want to strike
+;Bakerloo line
+(define bakerloo-line (make-mutable-graph))
+(add-edge! bakerloo-line "harrow & wealdstone" "kenton" 3)
+(add-edge! bakerloo-line "kenton" "south kenton" 2)
+(add-edge! bakerloo-line "south kenton" "north wembley" 1)
+(add-edge! bakerloo-line "north wembley" "wembley central" 2)
+(add-edge! bakerloo-line "wembley central" "stonebridge park" 3)
+(add-edge! bakerloo-line "stonebridge park" "harlesden" 2)
+(add-edge! bakerloo-line "harlesden" "willesden junction" 2)
+(add-edge! bakerloo-line "willesden junction" "kensal green" 3)
+(add-edge! bakerloo-line "kensal green" "queens park" 3)
+(add-edge! bakerloo-line "queens park" "kilburn park" 2)
+(add-edge! bakerloo-line "kilburn park" "maida vale" 1)
+(add-edge! bakerloo-line "maida vale" "warwick avenue" 2)
+(add-edge! bakerloo-line "warwick avenue" "paddington" 2)
+(add-edge! bakerloo-line "paddington" "edgeware road" 2)
+(add-edge! bakerloo-line "edgeware road" "marylebone" 1)
+(add-edge! bakerloo-line "marylebone" "baker street" 1)
+(add-edge! bakerloo-line "baker street" "regents park" 2)
+(add-edge! bakerloo-line "regents park" "oxford circus" 2)
+(add-edge! bakerloo-line "oxford circus" "piccadilly circus" 2)
+(add-edge! bakerloo-line "piccadilly circus" "charing cross" 2)
+(add-edge! bakerloo-line "charing cross" "embankment" 1)
+(add-edge! bakerloo-line "embankment" "waterloo" 1)
+(add-edge! bakerloo-line "waterloo" "lambeth north" 2)
+(add-edge! bakerloo-line "lambeth north" "elephant & castle" 2)
+
+;A function that generates a number between 1 - 3 and adds it to the time field simulating a strike
+(define (randomize-strike line)
+  (define edges (hash-ref line 'edges '()))
+  (for-each
+   (lambda (edge)
+     (let* ((random-strike (random 4)) ;Generates a random number between 1 - 3
+            (default-time (caddr edge))
+            (strike-time (+ default-time random-strike))) ;Adds the generated number to the default time
+       (hash-set! line 'edges ;Replaces the old time with the new time after the strike
+                  (replace-edge (hash-ref line 'edges '())
+                                (car edge) (cadr edge) strike-time)))) edges) line)
+
+(define (replace-edge edges station1 station2 new-time)
+  (map (lambda (edge)
+         (if (and (equal? (car edge) station1) (equal? (cadr edge) station2)) ; Check if the current edge matches the specified stations
+             (list station1 station2 new-time) ;If yes createa new edge with updated time if not keep the edges the same
+             edge)) edges))
+
+;A function that chooses a random line to strike
+;For now the function can only choose between Northern and Bakerloo line as Racket crashes when all the lines are in the file
+(define (randomize-line-strike)
+  (let ((lines '(northern-line bakerloo))) ;Insert all of the available lines into this list
+    (let ((chosen-line (list-ref lines (random (length lines))))) ;Randomly chooses a line
+      (cond 
+        ((equal? chosen-line 'northern-line) (randomize-strike northern-line)) ;If the randomly chosen line is Northern line strike Northern line etc.
+        ((equal? chosen-line 'bakerloo) (randomize-strike bakerloo-line))
+        (else (error "Line doesn't exist"))))))
+
+(randomize-line-strike) ;Show times on a randomly selected line after times have been updated due to a randomised strike
