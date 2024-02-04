@@ -35,8 +35,14 @@
     [parent myframe]))
 
 ;show where are strikes
-  (define chosen-line (randomize-line-strike))
-  (define msg (format "Strikes on: ~a" chosen-line))
-  (new message% [parent myframe] [label msg])
+(define (randomize-line-strike)
+  (let ((lines '(northern-line bakerloo central-line circle-line district-line hammersmith-city-line jubilee-line metropolitan-line piccadilly-line victoria-line)))
+    (let ((chosen-line (list-ref lines (random (length lines)))))
+      (let  ((msg (format "Strikes on: ~a" chosen-line)))
+      (new message% [parent myframe] [label msg])))))
+
+(define chosen-line (randomize-line-strike))
+(define msg (format "Strikes on: ~a" chosen-line))
 
 (send myframe show #t)
+
