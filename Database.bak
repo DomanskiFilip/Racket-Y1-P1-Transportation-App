@@ -463,4 +463,3 @@
 ; Waterloo & City Line
 (define waterloo-city-line (make-mutable-graph))
 (add-edge! waterloo-city-line "waterloo" "bank" 4)
-(provide waterloo-city-line) ;provides the line to be accessed by other files
