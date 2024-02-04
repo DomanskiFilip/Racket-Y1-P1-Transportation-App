@@ -1,7 +1,6 @@
 #lang racket
 (require "Database.rkt")
 
-
 ; Returns the neighbors of a given station, could be used to get a route if done right
 ; This also returns all neighbors, even the ones going backwards or forwards
 (define (get-neighbours line station)
@@ -32,7 +31,6 @@
              (list (cadr neighbour) (caddr neighbour))
              (list (car neighbour) (caddr neighbour))))
        neighbors))
-
 
 ; Gets the weight (time) between the vertexes (stations), could be used to get the approximate time 
 ; to get from station a to station b
@@ -78,16 +76,12 @@
              edge)) edges))
 
 ;A function that chooses a random line to strike
-;For now the function can only choose between Northern and Bakerloo line as Racket crashes when all the lines are in the file
 (define (randomize-line-strike)
-  (let ((lines '(northern-line bakerloo))) ;Insert all of the available lines into this list
-    (let ((chosen-line (list-ref lines (random (length lines))))) ;Randomly chooses a line
-      (cond 
-        ((equal? chosen-line 'northern-line) (randomize-strike northern-line)) ;If the randomly chosen line is Northern line strike Northern line etc.
-        ((equal? chosen-line 'bakerloo) (randomize-strike bakerloo-line))
-        (else (error "Line doesn't exist"))))))
+  (let ((lines '(northern-line bakerloo central-line circle-line district-line hammersmith-city-line jubilee-line metropolitan-line piccadilly-line victoria-line)))
+    (let ((chosen-line (list-ref lines (random (length lines)))))
+      (printf "Strikes on: ~a\n" chosen-line))))
 
-(randomize-line-strike) ;Show times on a randomly selected line after times have been updated due to a randomised strike
+(randomize-line-strike) ;Show which line has been striked
 
-(get-line northern-line)
+;(get-line northern-line) ;Displays an entire line
 
