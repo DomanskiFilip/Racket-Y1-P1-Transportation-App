@@ -1,5 +1,49 @@
-#lang racket
+#lang racket/gui
 (require "Database.rkt")
+
+;GUI
+
+;Window
+(define myframe (new frame%
+    [label "World's best travel app"]
+    [width 250]
+    [height 100]))
+
+;Start location input field
+(define start (new text-field%
+    [label "            Start: "]
+    [parent myframe]
+    [style '(single)]
+    [enabled #t]))
+
+;Destination location input firld
+(define destination (new text-field%
+    [label "Destination: "]
+    [parent myframe]
+    [style '(single)]
+    [enabled #t]))
+
+;Start journey button
+(new button%
+    [label "Start Journey"]
+    [parent myframe]
+    [callback (lambda (a b)
+    (send output set-value "idk :("))]) 
+
+;Directions output field
+(define output(new text-field%
+    [label "  Directions: "]
+    [enabled #f]
+    [parent myframe]))
+
+(define strike-warning(new text-field%
+                           [label "  Strikes on:  "]
+                           [parent myframe]
+                           [enabled #f]))
+
+(send myframe show #t)
+
+;Functions
 
 ; Returns the neighbors of a given station, could be used to get a route if done right
 ; This also returns all neighbors, even the ones going backwards or forwards
@@ -72,17 +116,16 @@
 (define (replace-edge edges station1 station2 new-time)
   (map (lambda (edge)
          (if (and (equal? (car edge) station1) (equal? (cadr edge) station2)) ; Check if the current edge matches the specified stations
-             (list station1 station2 new-time) ;If yes createa new edge with updated time if not keep the edges the same
+             (list station1 station2 new-time) ;If yes create a new edge with updated time if not keep the edges the same
              edge)) edges))
 
 ;A function that chooses a random line to strike
 (define (randomize-line-strike)
   (let ((lines '(northern-line bakerloo central-line circle-line district-line hammersmith-city-line jubilee-line metropolitan-line piccadilly-line victoria-line)))
     (let ((chosen-line (list-ref lines (random (length lines)))))
-      (printf "Strikes on: ~a\n" chosen-line))))
+      (send strike-warning set-value (symbol->string chosen-line)) ;Sends the randomly selected line into the GUI
+      (printf "Strikes on: ~a\n" chosen-line)))) 
 
+(randomize-line-strike)
 
-(randomize-line-strike) ;Show which line has been striked
-(provide randomize-line-strike)
 ;(get-line northern-line) ;Displays an entire line
-
