@@ -1,5 +1,15 @@
 #lang racket
 
+; Allows for the creation of a hash table to store the stations, their neighbors 
+; and the time to travel to the next station
+(define (make-mutable-graph)
+  (make-hash '()))
+
+; Adds the edge (connection between stations) to the vertexes (stations)
+(define (add-edge! line station1 station2 time)
+  (define new-edges (cons (list station1 station2 time) (hash-ref line 'edges '())))
+  (hash-set! line 'edges new-edges))
+
 ; Northern Line
 (define northern-line (make-mutable-graph))
 (add-edge! northern-line "high barnet" "totteridge & whetstone" 4)
@@ -55,6 +65,7 @@
 (add-edge! northern-line "tooting broadway" "colliers wood" 2)
 (add-edge! northern-line "colliers wood" "south wimbledon" 2)
 (add-edge! northern-line "south wimbledon" "morden" 3)
+(provide northern-line) ;provides the line to be accessed by other files
 
 ; Bakerloo Line
 (define bakerloo-line (make-mutable-graph))
@@ -82,6 +93,7 @@
 (add-edge! bakerloo-line "embankment" "waterloo" 1)
 (add-edge! bakerloo-line "waterloo" "lambeth north" 2)
 (add-edge! bakerloo-line "lambeth north" "elephant & castle" 2)
+(provide bakerloo-line) ;provides the line to be accessed by other files
 
 ; Central Line
 (define central-line (make-mutable-graph))
@@ -134,6 +146,7 @@
 (add-edge! central-line "loughton" "debden" 4)
 (add-edge! central-line "debden" "theydon bois" 4)
 (add-edge! central-line "theydon bois" "epping" 3)
+(provide central-line) ;provides the line to be accessed by other files
 
 ; Circle Line
 (define circle-line (make-mutable-graph))
@@ -164,6 +177,7 @@
 (add-edge! circle-line "high street kensington" "notting hill gate" 2)
 (add-edge! circle-line "notting hill gate" "bayswater" 2)
 (add-edge! circle-line "bayswater" "paddington" 2)
+(provide circle-line) ;provides the line to be accessed by other files
 
 ; District Line
 (define district-line (make-mutable-graph))
@@ -226,6 +240,7 @@
 (add-edge! district-line "elm park" "hornchurch" 2)
 (add-edge! district-line "hornchurch" "upminster bridge" 2)
 (add-edge! district-line "upminster bridge" "upminster" 2)
+(provide district-line) ;provides the line to be accessed by other files
 
 ; Elizabeth Line
 ; No given off-peak times, left values as 0
@@ -270,6 +285,7 @@
 (add-edge! elizabeth-line "canary wharf" "custom house" 0)
 (add-edge! elizabeth-line "custom house" "woolwich" 0)
 (add-edge! elizabeth-line "woolwich" "abbey wood" 0)
+(provide elizabeth-line) ;provides the line to be accessed by other files
 
 ; Hammersmith & City Line
 (define hammersmith-city-line (make-mutable-graph))
@@ -300,6 +316,7 @@
 (add-edge! hammersmith-city-line "plaistow" "upton park" 2)
 (add-edge! hammersmith-city-line "upton park" "east ham" 2)
 (add-edge! hammersmith-city-line "east ham" "barking" 3)
+(provide hammersmith-city-line) ;provides the line to be accessed by other files
 
 ; Jubilee Line
 (define jubilee-line (make-mutable-graph))
@@ -329,6 +346,7 @@
 (add-edge! jubilee-line "kingsbury" "queensbury" 2)
 (add-edge! jubilee-line "queensbury" "canons park" 3)
 (add-edge! jubilee-line "canons park" "stanmore" 2)
+(provide jubilee-line) ;provides the line to be accessed by other files
 
 ; Metropolitan Line
 (define metropolitan-line (make-mutable-graph))
@@ -365,6 +383,7 @@
 (add-edge! metropolitan-line "barbican" "moorgate" 1)
 (add-edge! metropolitan-line "moorgate" "liverpool street" 2)
 (add-edge! metropolitan-line "liverpool street" "aldgate" 2)
+(provide metropolitan-line) ;provides the line to be accessed by other files
 
 ; Piccadilly Line
 (define piccadilly-line (make-mutable-graph))
@@ -420,6 +439,7 @@
 (add-edge! piccadilly-line "arnos grove" "southgate" 3)
 (add-edge! piccadilly-line "southgate" "oakwood" 3)
 (add-edge! piccadilly-line "oakwood" "cockfosters" 2)
+(provide piccadilly-line) ;provides the line to be accessed by other files
 
 ; Victoria Line
 (define victoria-line (make-mutable-graph))
@@ -438,16 +458,8 @@
 (add-edge! victoria-line "pimlico" "vauxhall" 1)
 (add-edge! victoria-line "vauxhall" "stockwell" 3)
 (add-edge! victoria-line "stockwell" "brixton" 2)
+(provide victoria-line) ;provides the line to be accessed by other files
 
 ; Waterloo & City Line
 (define waterloo-city-line (make-mutable-graph))
 (add-edge! waterloo-city-line "waterloo" "bank" 4)
-
-; London Overground (do it if you dare)
-
-(get-neighbours northern-line "goodge street")           ; Test: check the neighbors of a station with more than one connection, should return (("warren street" 2) ("tottenham court road" 1))
-(get-neighbours northern-line "morden")                  ; Test: check the neighbors of a station at the end of the line, should return (("south wimbledon" 3))
-(get-neighbours northern-line "high barnet")             ; Test: check the neighbors of a station at the beginning of a line, should return (("totteridge & whetstone" 4))
-(get-neighbours northern-line "camden town")             ; Test: check the neighbors of a station with more than two connections, should return (("mornington crescent" 2) ("euston" 3) ("chalk farm" 2) ("kentish town" 2))
-(get-time northern-line "morden" "south wimbledon")   ; Test: check the weight between two staions, should return 3
-(get-time northern-line "south wimbledon" "morden")   ; Test: check if the same works but in reverse, should return 3
