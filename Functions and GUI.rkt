@@ -132,4 +132,6 @@
 
 (randomize-line-strike)
 
-;(get-line northern-line) ;Displays an entire line
+
+
+
