@@ -124,12 +124,25 @@
              edge)) edges))
 
 ;A function that chooses a random line to strike
-(define (randomize-line-strike)
-  (let ((lines '(northern-line bakerloo central-line circle-line district-line hammersmith-city-line jubilee-line metropolitan-line piccadilly-line victoria-line)))
-    (let ((chosen-line (list-ref lines (random (length lines)))))
-      (send strike-warning set-value (symbol->string chosen-line)) ;Sends the randomly selected line into the GUI
-      (printf "Strikes on: ~a\n" chosen-line)))) 
+(define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
+(define chosen-line (list-ref lines (random (length lines))))
+(send strike-warning set-value chosen-line)
+(printf "Strikes on: ~a\n" chosen-line)
 
+;If Northern Line is chosen then strike Northern Line, if Bakerloo Line is chosen then strike Bakerloo Line etc.
+(define (randomize-line-strike)
+      (cond
+        [(equal? chosen-line "Northern Line") (randomize-strike northern-line)]
+        [(equal? chosen-line "Bakerloo Line") (randomize-strike bakerloo-line)]
+        [(equal? chosen-line "Central Line") (randomize-strike central-line)]
+        [(equal? chosen-line "Circle Line") (randomize-strike circle-line)]
+        [(equal? chosen-line "District Line") (randomize-strike district-line)]
+        [(equal? chosen-line "Hammersmith City Line") (randomize-strike hammersmith-city-line)]
+        [(equal? chosen-line "Jubilee Line") (randomize-strike jubilee-line)]
+        [(equal? chosen-line "Metropolitan Line") (randomize-strike metropolitan-line)]
+        [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
+        [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
+       
 (randomize-line-strike)
 
 ;(get-line northern-line) ;Displays an entire line
