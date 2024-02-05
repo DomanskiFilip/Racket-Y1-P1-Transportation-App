@@ -1,4 +1,5 @@
 #lang racket/gui
+(require racket/gui/base)
 (require "Database.rkt")
 
 
@@ -13,7 +14,6 @@
 (define (get-stations start-line-v)
   (cond
     [(equal? start-line-v "Northern Line")
-     (printf "I'm working Northern Line")
      (define edges (hash-ref northern-line 'edges '()))
      (for ([i (reverse edges)])
        (let ([station1 (car i)]
@@ -22,7 +22,6 @@
          (cons station1 stations-list)))]
 
 [(equal? start-line-v "Bakerloo Line")
- (printf "I'm working Bakerloo Line")
  (define edges (hash-ref bakerloo-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -31,7 +30,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "Central Line")
- (printf "I'm working Central Line")
  (define edges (hash-ref central-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -40,7 +38,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "District Line")
- (printf "I'm working District Line")
  (define edges (hash-ref district-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -49,7 +46,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "Hammersmith City Line")
- (printf "I'm working Hammersmith City Line")
  (define edges (hash-ref hammersmith-city-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -58,7 +54,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "Jubilee Line")
- (printf "I'm working Jubilee Line")
  (define edges (hash-ref jubilee-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -67,7 +62,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "Metropolitan Line")
- (printf "I'm working Metropolitan Line")
  (define edges (hash-ref metropolitan-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -76,7 +70,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "Piccadilly Line")
- (printf "I'm working Piccadilly Line")
  (define edges (hash-ref piccadilly-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -85,7 +78,6 @@
      (cons station1 stations-list)))]
 
 [(equal? start-line-v "Victoria Line")
- (printf "I'm working Victoria Line")
  (define edges (hash-ref victoria-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -93,8 +85,8 @@
          [time (caddr i)])
      (cons station1 stations-list)))]
 
-)
-(printf "I'm working")
+[else (printf " ")])
+  
 (define edges (hash-ref victoria-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
@@ -129,9 +121,11 @@
     [label "            Line: "]
     [parent myframe]
     [choices lines]
-    [callback (lambda (value1 value2)
-    (get-stations start-line-v))]
+    [callback (lambda (event value)
+                (printf "Selected line: ~a\n" (send start-line get-value)) ; Debugging: Print selected line
+                (get-stations (send start-line get-value)))]
     [enabled #t]))
+
 
 ;Start station input field
 (define start-station (new combo-field%
@@ -179,7 +173,6 @@
 
 ;Functions
 
-(define start-line-v (send start-line get-value))
 ; Returns the neighbors of a given station, could be used to get a route if done right
 ; This also returns all neighbors, even the ones going backwards or forwards
 (define (get-neighbours line station)
