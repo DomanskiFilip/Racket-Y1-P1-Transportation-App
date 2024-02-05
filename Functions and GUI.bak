@@ -3,59 +3,24 @@
 
 ;GUI
 
-(define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
-(define chosen-line (list-ref lines (random (length lines))))
-
 ;Window
 (define myframe (new frame%
     [label "World's best travel app"]
     [width 250]
     [height 100]))
 
-(new message%
-     [label "Delays due to:"]
-     [parent myframe])
-
-
-(define strike-warning(new text-field%
-                           [label "  Strikes on:  "]
-                           [parent myframe]
-                           [enabled #f]))
-
-(new message%
-     [label "Start"]
-     [parent myframe])
-
-;Start line input field
-(define start-line (new combo-field%
-    [label "            Line: "]
+;Start location input field
+(define start (new text-field%
+    [label "            Start: "]
     [parent myframe]
-    [choices lines]
+    [style '(single)]
     [enabled #t]))
 
-;Start station input field
-(define start-station (new combo-field%
-    [label "       Station: "]
+;Destination location input firld
+(define destination (new text-field%
+    [label "Destination: "]
     [parent myframe]
-    [choices '("station1" "station2")]
-    [enabled #t]))
-
-(new message%
-     [label "Destination"]
-     [parent myframe])
-
-;Destination line input firld
-(define destination-line (new combo-field%
-    [label "            Line: "]
-    [parent myframe]
-    [choices lines]
-    [enabled #t]))
-
-;Destination station input field
-(define destination-station (new combo-field%
-    [label "       Station: "]
-    [parent myframe]
-    [choices '("station1" "station2")]
+    [style '(single)]
     [enabled #t]))
 
 ;Start journey button
@@ -63,8 +28,8 @@
     [label "Start Journey"]
     [parent myframe]
     [callback (lambda (value1 value2)
-    (define value1 (send start-line get-value))
-    (define value2 (send destination-line get-value))
+    (define value1 (send start get-value))
+    (define value2 (send destination get-value))
      (if (equal? value1 value2)
       (send output set-value "Inputs are equal.")
       (send output set-value "Inputs are not equal.")))]) 
@@ -74,6 +39,11 @@
     [label "  Directions: "]
     [enabled #f]
     [parent myframe]))
+
+(define strike-warning(new text-field%
+                           [label "  Strikes on:  "]
+                           [parent myframe]
+                           [enabled #f]))
 
 (send myframe show #t)
 
@@ -154,6 +124,8 @@
              edge)) edges))
 
 ;A function that chooses a random line to strike
+(define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
+(define chosen-line (list-ref lines (random (length lines))))
 (send strike-warning set-value chosen-line)
 (printf "Strikes on: ~a\n" chosen-line)
 
