@@ -2,7 +2,6 @@
 (require racket/gui/base)
 (require "Database.rkt")
 
-
 ;GUI
 
 (define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
@@ -93,10 +92,8 @@
          [time (caddr i)])
      (set! start-stations-list (cons station1 start-stations-list))))]
 
-[else (printf " ")])
- )
+[else (printf " ")]))
  
-
 ;Window
 (define myframe (new frame%
     [label "World's best travel app"]
@@ -106,7 +103,6 @@
 (new message%
      [label "Delays due to:"]
      [parent myframe])
-
 
 (define strike-warning(new text-field%
                            [label "  Strikes on:  "]
@@ -119,7 +115,7 @@
 
 ;Start line input field
 (define start-line (new combo-field%
-    [label "            start-line: "]
+    [label "             start-line:      "]
     [parent myframe]
     [choices lines]
     [callback (lambda (event value)
@@ -129,7 +125,6 @@
                 (update-start-station))]
     [enabled #t]))
 
-
 ; Delay the initialization of start-station until stations-list is populated
 (define start-station #f) ; Define start-station initially as #f
 
@@ -137,7 +132,7 @@
 (define (initialize-start-station)
   (set! start-station
         (new combo-field%
-                    [label "       start-station: "]
+                    [label "       start-station:      "]
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
@@ -153,7 +148,7 @@
         ; Create a new combo-field for the updated stations list
         (let ([new-start-station
                (new combo-field%
-                    [label "       start-station: "]
+                    [label "       start-station:      "]
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
@@ -185,7 +180,7 @@
 (define (initialize-destination-line)
   (set! destination-line
         (new combo-field%
-             [label "       destination-line: "]
+             [label "destination-line:       "]
              [parent myframe]
              [choices lines]
              [callback (lambda (event value)
@@ -216,7 +211,7 @@
 (define (initialize-destination-station)
   (set! destination-station
         (new combo-field%
-                    [label "      destination-station: "]
+                    [label "destination-station: "]
                     [parent myframe]
                     [choices start-stations-list]
                     [enabled #t])))
