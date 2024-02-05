@@ -10,7 +10,7 @@
 
 ;Get stations
 
-(define (string-to-line start-line-v a)
+(define (string-to-line start-line-v)
   (cond
     [(equal? start-line-v "Northern Line") (get-stations northern-line)]
         [(equal? start-line-v "Bakerloo Line") (get-stations bakerloo-line)]
@@ -31,10 +31,7 @@
     (let ([station1 (car i)]
           [station2 (cadr i)]
           [time (caddr i)])
-     (cons station1 stations-list))
-    )
-  (send start-station set string-to-line stations-list)  
-  )
+     (cons station1 stations-list))))
 
 ;Window
 (define myframe (new frame%
@@ -61,7 +58,8 @@
     [label "            Line: "]
     [parent myframe]
     [choices lines]
-    [callback string-to-line]
+    [callback (lambda (value1 value2)
+    (string-to-line start-line-v))]
     [enabled #t]))
 
 ;Start station input field
@@ -203,7 +201,7 @@
         [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
         [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
        
-(randomize-line-strike)
+; (randomize-line-strike)
 
 
 
