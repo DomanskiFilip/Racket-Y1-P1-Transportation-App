@@ -3,24 +3,59 @@
 
 ;GUI
 
+(define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
+(define chosen-line (list-ref lines (random (length lines))))
+
 ;Window
 (define myframe (new frame%
     [label "World's best travel app"]
     [width 250]
     [height 100]))
 
-;Start location input field
-(define start (new text-field%
-    [label "            Start: "]
+(new message%
+     [label "Delays due to:"]
+     [parent myframe])
+
+
+(define strike-warning(new text-field%
+                           [label "  Strikes on:  "]
+                           [parent myframe]
+                           [enabled #f]))
+
+(new message%
+     [label "Start"]
+     [parent myframe])
+
+;Start line input field
+(define start-line (new combo-field%
+    [label "            Line: "]
     [parent myframe]
-    [style '(single)]
+    [choices lines]
     [enabled #t]))
 
-;Destination location input firld
-(define destination (new text-field%
-    [label "Destination: "]
+;Start station input field
+(define start-station (new combo-field%
+    [label "       Station: "]
     [parent myframe]
-    [style '(single)]
+    [choices '("station1" "station2")]
+    [enabled #t]))
+
+(new message%
+     [label "Destination"]
+     [parent myframe])
+
+;Destination line input firld
+(define destination-line (new combo-field%
+    [label "            Line: "]
+    [parent myframe]
+    [choices lines]
+    [enabled #t]))
+
+;Destination station input field
+(define destination-station (new combo-field%
+    [label "       Station: "]
+    [parent myframe]
+    [choices '("station1" "station2")]
     [enabled #t]))
 
 ;Start journey button
@@ -28,8 +63,8 @@
     [label "Start Journey"]
     [parent myframe]
     [callback (lambda (value1 value2)
-    (define value1 (send start get-value))
-    (define value2 (send destination get-value))
+    (define value1 (send start-line get-value))
+    (define value2 (send destination-line get-value))
      (if (equal? value1 value2)
       (send output set-value "Inputs are equal.")
       (send output set-value "Inputs are not equal.")))]) 
@@ -39,11 +74,6 @@
     [label "  Directions: "]
     [enabled #f]
     [parent myframe]))
-
-(define strike-warning(new text-field%
-                           [label "  Strikes on:  "]
-                           [parent myframe]
-                           [enabled #f]))
 
 (send myframe show #t)
 
@@ -124,12 +154,23 @@
              edge)) edges))
 
 ;A function that chooses a random line to strike
-(define (randomize-line-strike)
-  (let ((lines '(northern-line bakerloo central-line circle-line district-line hammersmith-city-line jubilee-line metropolitan-line piccadilly-line victoria-line)))
-    (let ((chosen-line (list-ref lines (random (length lines)))))
-      (send strike-warning set-value (symbol->string chosen-line)) ;Sends the randomly selected line into the GUI
-      (printf "Strikes on: ~a\n" chosen-line)))) 
+(send strike-warning set-value chosen-line)
+(printf "Strikes on: ~a\n" chosen-line)
 
+;If Northern Line is chosen then strike Northern Line, if Bakerloo Line is chosen then strike Bakerloo Line etc.
+(define (randomize-line-strike)
+      (cond
+        [(equal? chosen-line "Northern Line") (randomize-strike northern-line)]
+        [(equal? chosen-line "Bakerloo Line") (randomize-strike bakerloo-line)]
+        [(equal? chosen-line "Central Line") (randomize-strike central-line)]
+        [(equal? chosen-line "Circle Line") (randomize-strike circle-line)]
+        [(equal? chosen-line "District Line") (randomize-strike district-line)]
+        [(equal? chosen-line "Hammersmith City Line") (randomize-strike hammersmith-city-line)]
+        [(equal? chosen-line "Jubilee Line") (randomize-strike jubilee-line)]
+        [(equal? chosen-line "Metropolitan Line") (randomize-strike metropolitan-line)]
+        [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
+        [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
+       
 (randomize-line-strike)
 
 
