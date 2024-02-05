@@ -7,7 +7,7 @@
 
 (define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
 (define chosen-line (list-ref lines (random (length lines))))
-(define stations-list '())
+(define start-stations-list '())
 
 ;Get stations
 
@@ -19,7 +19,7 @@
        (let ([station1 (car i)]
              [station2 (cadr i)]
              [time (caddr i)])
-         (cons station1 stations-list)))]
+         (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Bakerloo Line")
  (define edges (hash-ref bakerloo-line 'edges '()))
@@ -27,7 +27,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Central Line")
  (define edges (hash-ref central-line 'edges '()))
@@ -35,7 +35,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "District Line")
  (define edges (hash-ref district-line 'edges '()))
@@ -43,7 +43,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Hammersmith City Line")
  (define edges (hash-ref hammersmith-city-line 'edges '()))
@@ -51,7 +51,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Jubilee Line")
  (define edges (hash-ref jubilee-line 'edges '()))
@@ -59,7 +59,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Metropolitan Line")
  (define edges (hash-ref metropolitan-line 'edges '()))
@@ -67,7 +67,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Piccadilly Line")
  (define edges (hash-ref piccadilly-line 'edges '()))
@@ -75,7 +75,7 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
 [(equal? start-line-v "Victoria Line")
  (define edges (hash-ref victoria-line 'edges '()))
@@ -83,23 +83,24 @@
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))]
+     (set! start-stations-list (cons station1 start-stations-list))))]
 
-[else (printf " ")])
-  
-(define edges (hash-ref victoria-line 'edges '()))
+[(equal? start-line-v "Circle Line")
+ (define edges (hash-ref circle-line 'edges '()))
  (for ([i (reverse edges)])
    (let ([station1 (car i)]
          [station2 (cadr i)]
          [time (caddr i)])
-     (cons station1 stations-list)))
+     (set! start-stations-list (cons station1 start-stations-list))))]
+
+[else (printf " ")])
  )
  
 
 ;Window
 (define myframe (new frame%
     [label "World's best travel app"]
-    [width 250]
+    [width 500]
     [height 100]))
 
 (new message%
@@ -118,56 +119,120 @@
 
 ;Start line input field
 (define start-line (new combo-field%
-    [label "            Line: "]
+    [label "            start-line: "]
     [parent myframe]
     [choices lines]
     [callback (lambda (event value)
-                (printf "Selected line: ~a\n" (send start-line get-value)) ; Debugging: Print selected line
-                (get-stations (send start-line get-value)))]
+                (printf "Selected line (start): ~a\n" (send start-line get-value)) ; Debugging: Print selected line
+                (set! start-stations-list '())
+                (get-stations (send start-line get-value))
+                (update-start-station))]
     [enabled #t]))
 
 
-;Start station input field
-(define start-station (new combo-field%
-    [label "       Station: "]
-    [parent myframe]
-    [choices stations-list]
-    [enabled #t]))
+; Delay the initialization of start-station until stations-list is populated
+(define start-station #f) ; Define start-station initially as #f
 
-(new message%
-     [label "Destination"]
-     [parent myframe])
+; Function to initialize start-station once stations-list is populated
+(define (initialize-start-station)
+  (set! start-station
+        (new combo-field%
+                    [label "       start-station: "]
+                    [parent myframe]
+                    [choices start-stations-list]
+                    [callback (lambda (event value)
+                                (create-destination-line))]
+                    [enabled #t])))
 
-;Destination line input firld
-(define destination-line (new combo-field%
-    [label "            Line: "]
-    [parent myframe]
-    [choices lines]
-    [enabled #t]))
+; Function to update start-station choices when stations-list is updated
+(define (update-start-station)
+  (if (not (equal? start-station #f))
+      (begin
+        ; Remove the previous start-station from the parent frame
+        (send myframe delete-child start-station)
+        ; Create a new combo-field for the updated stations list
+        (let ([new-start-station
+               (new combo-field%
+                    [label "       start-station: "]
+                    [parent myframe]
+                    [choices start-stations-list]
+                    [callback (lambda (event value)
+                                (create-destination-line))]
+                    [enabled #t])])
+          (set! start-station new-start-station)))
+      (initialize-start-station)))
 
-;Destination station input field
-(define destination-station (new combo-field%
-    [label "       Station: "]
-    [parent myframe]
-    [choices stations-list]
-    [enabled #t]))
+; Define a callback function to be called after stations-list is populated
+(define (stations-list-populated)
+  (update-start-station))
 
-;Start journey button
-(new button%
-    [label "Start Journey"]
-    [parent myframe]
-    [callback (lambda (value1 value2)
-    (define value1 (send start-line get-value))
-    (define value2 (send destination-line get-value))
-     (if (equal? value1 value2)
-      (send output set-value "Inputs are equal.")
-      (send output set-value "Inputs are not equal.")))]) 
+; Get stations asynchronously and call stations-list-populated when done
+(thread
+ (lambda ()
+   (get-stations (send start-line get-value))
+   (stations-list-populated)))
 
-;Directions output field
-(define output(new text-field%
-    [label "  Directions: "]
-    [enabled #f]
-    [parent myframe]))
+; DESTINATION
+(define destination-msg #f)
+(define destination-line #f)
+
+(define (initialize-destination-msg)
+  (set! destination-msg
+        (new message%
+             [label "Destination"]
+             [parent myframe])))
+
+(define (initialize-destination-line)
+  (set! destination-line
+        (new combo-field%
+             [label "       destination-line: "]
+             [parent myframe]
+             [choices lines]
+             [callback (lambda (event value)
+                (printf "Selected line (destination): ~a\n" (send destination-line get-value)) ; Debugging: Print selected line
+                (set! start-stations-list '())
+                (get-stations (send start-line get-value))
+                        (update-destination-station))]
+             [enabled #t])))
+
+(define (create-destination-line)
+   (if (not (equal? destination-line #f))
+      (begin
+        ; Remove the previous destination components from the parent frame
+        (send myframe delete-child destination-msg)
+        (send myframe delete-child destination-line)
+        ; Create new destination components
+        (initialize-destination-msg)
+        (initialize-destination-line))
+      (begin
+        ; If destination is #f, initialize new destination components
+        (initialize-destination-msg)
+        (initialize-destination-line))))
+
+
+(define destination-station #f) ; Define start-station initially as #f
+
+; Function to initialize start-station once stations-list is populated
+(define (initialize-destination-station)
+  (set! destination-station
+        (new combo-field%
+                    [label "      destination-station: "]
+                    [parent myframe]
+                    [choices start-stations-list]
+                    [enabled #t])))
+
+; Function to update start-station choices when stations-list is updated
+(define (update-destination-station)
+  (if (not (equal? destination-station #f))
+      (begin
+        ; Remove the previous start-station from the parent frame
+        (send myframe delete-child destination-station)
+         ; Create new destination components
+        (initialize-destination-station))
+      (begin
+        ; If destination is #f, initialize new destination components
+        (initialize-destination-station))))
+
 
 (send myframe show #t)
 
@@ -264,8 +329,7 @@
         [(equal? chosen-line "Metropolitan Line") (randomize-strike metropolitan-line)]
         [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
         [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
-       
-; (randomize-line-strike)
+
 
 
 
