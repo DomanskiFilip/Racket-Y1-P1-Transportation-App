@@ -10,99 +10,28 @@
 
 ;Get stations
 
-(define (get-stations start-line-v)
+(define (string-to-line start-line-v)
   (cond
-    [(equal? start-line-v "Northern Line")
-     (printf "I'm working Northern Line")
-     (define edges (hash-ref northern-line 'edges '()))
-     (for ([i (reverse edges)])
-       (let ([station1 (car i)]
-             [station2 (cadr i)]
-             [time (caddr i)])
-         (cons station1 stations-list)))]
+    [(equal? start-line-v "Northern Line") (get-stations northern-line)]
+        [(equal? start-line-v "Bakerloo Line") (get-stations bakerloo-line)]
+        [(equal? start-line-v "Central Line") (get-stations central-line)]
+        [(equal? start-line-v "Circle Line") (get-stations circle-line)]
+        [(equal? start-line-v "District Line") (get-stations district-line)]
+        [(equal? start-line-v "Hammersmith City Line") (get-stations hammersmith-city-line)]
+        [(equal? start-line-v "Jubilee Line") (get-stations jubilee-line)]
+        [(equal? start-line-v "Metropolitan Line") (get-stations metropolitan-line)]
+        [(equal? start-line-v "Piccadilly Line") (get-stations piccadilly-line)]
+        [(equal? start-line-v "Victoria Line") (get-stations victoria-line)]))
 
-[(equal? start-line-v "Bakerloo Line")
- (printf "I'm working Bakerloo Line")
- (define edges (hash-ref bakerloo-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
 
-[(equal? start-line-v "Central Line")
- (printf "I'm working Central Line")
- (define edges (hash-ref central-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-[(equal? start-line-v "District Line")
- (printf "I'm working District Line")
- (define edges (hash-ref district-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-[(equal? start-line-v "Hammersmith City Line")
- (printf "I'm working Hammersmith City Line")
- (define edges (hash-ref hammersmith-city-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-[(equal? start-line-v "Jubilee Line")
- (printf "I'm working Jubilee Line")
- (define edges (hash-ref jubilee-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-[(equal? start-line-v "Metropolitan Line")
- (printf "I'm working Metropolitan Line")
- (define edges (hash-ref metropolitan-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-[(equal? start-line-v "Piccadilly Line")
- (printf "I'm working Piccadilly Line")
- (define edges (hash-ref piccadilly-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-[(equal? start-line-v "Victoria Line")
- (printf "I'm working Victoria Line")
- (define edges (hash-ref victoria-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))]
-
-)
-(printf "I'm working")
-(define edges (hash-ref victoria-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (cons station1 stations-list)))
- )
- 
+(define (get-stations line)
+  (printf "Im working")
+  (define edges (hash-ref line 'edges '()))
+  (for ([i (reverse edges)])
+    (let ([station1 (car i)]
+          [station2 (cadr i)]
+          [time (caddr i)])
+     (cons station1 stations-list))))
 
 ;Window
 (define myframe (new frame%
@@ -130,7 +59,7 @@
     [parent myframe]
     [choices lines]
     [callback (lambda (value1 value2)
-    (get-stations start-line-v))]
+    (string-to-line start-line-v))]
     [enabled #t]))
 
 ;Start station input field
