@@ -1,40 +1,10 @@
 #lang racket/gui
 (require "Database.rkt")
 
-
 ;GUI
 
 (define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
 (define chosen-line (list-ref lines (random (length lines))))
-(define stations-list '())
-
-;Get stations
-
-(define (string-to-line start-line-v a)
-  (cond
-    [(equal? start-line-v "Northern Line") (get-stations northern-line)]
-        [(equal? start-line-v "Bakerloo Line") (get-stations bakerloo-line)]
-        [(equal? start-line-v "Central Line") (get-stations central-line)]
-        [(equal? start-line-v "Circle Line") (get-stations circle-line)]
-        [(equal? start-line-v "District Line") (get-stations district-line)]
-        [(equal? start-line-v "Hammersmith City Line") (get-stations hammersmith-city-line)]
-        [(equal? start-line-v "Jubilee Line") (get-stations jubilee-line)]
-        [(equal? start-line-v "Metropolitan Line") (get-stations metropolitan-line)]
-        [(equal? start-line-v "Piccadilly Line") (get-stations piccadilly-line)]
-        [(equal? start-line-v "Victoria Line") (get-stations victoria-line)]))
-
-
-(define (get-stations line)
-  (printf "Im working")
-  (define edges (hash-ref line 'edges '()))
-  (for ([i (reverse edges)])
-    (let ([station1 (car i)]
-          [station2 (cadr i)]
-          [time (caddr i)])
-     (cons station1 stations-list))
-    )
-  (send start-station set string-to-line stations-list)  
-  )
 
 ;Window
 (define myframe (new frame%
@@ -61,14 +31,13 @@
     [label "            Line: "]
     [parent myframe]
     [choices lines]
-    [callback string-to-line]
     [enabled #t]))
 
 ;Start station input field
 (define start-station (new combo-field%
     [label "       Station: "]
     [parent myframe]
-    [choices stations-list]
+    [choices '("station1" "station2")]
     [enabled #t]))
 
 (new message%
@@ -86,7 +55,7 @@
 (define destination-station (new combo-field%
     [label "       Station: "]
     [parent myframe]
-    [choices stations-list]
+    [choices '("station1" "station2")]
     [enabled #t]))
 
 ;Start journey button
@@ -110,7 +79,6 @@
 
 ;Functions
 
-(define start-line-v (send start-line get-value))
 ; Returns the neighbors of a given station, could be used to get a route if done right
 ; This also returns all neighbors, even the ones going backwards or forwards
 (define (get-neighbours line station)
