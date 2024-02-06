@@ -283,45 +283,34 @@
         [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
 
 
-(define (find-path line start-station end-station visited-path)
-  (define (dfs station)
-    (if (equal? station end-station)
-        (list end-station)
-        (let ((neighbors (get-neighbors line station)))
-          (let loop ((neighbors neighbors))
-            (cond
-              ((null? neighbors) '())
-              ((member (car neighbors) visited-path) (loop (cdr neighbors)))
-              (else
-               (let ((path (dfs (car neighbors))))
-                 (if path
-                     (cons station path)
-                     (loop (cdr neighbors))))))))))
-  (dfs start-station))
-
-(define (get-neighbors line station)
-  (map car (filter (lambda (edge) (equal? (car edge) station)) (hash-ref line 'edges '()))))
-
 (define (all-stations-with-times line station1 station2)
-  (let ((path (find-path line station1 station2 '())))
-    (if (null? path)
-        '() ; No path found
-        (let loop ((path path) (result '()))
-          (cond
-            ((null? (cdr path)) (reverse result))
-            (else
-             (let* ((current-station (car path))
-                    (next-station (cadr path))
-                    (time (find-edge-time line current-station next-station)))
-               (loop (cdr path) (cons (list current-station next-station time) result)))))))))
+  (define (loop edges result)
+    (cond
+      ((null? edges) result) ; No more stations
+      ((equal? (caar edges) station2) result) ; Reached the end station
+      ((equal? (caar edges) station1)
+       (let ((next-station (cadar edges))
+             (time (caddr (car edges))))
+         (loop (cdr edges) (cons (list station1 next-station time) result))))
+      (else (loop (cdr edges) result))))
 
-(define (find-edge-time line station1 station2)
-  (let ((edges (hash-ref line 'edges '())))
-    (let ((edge (assoc (list station1 station2) edges)))
-      (if edge
-          (caddr edge)
-          0)))) ; Default time if edge not found
-
+  (let ((result (loop (hash-ref line 'edges '()) '())))
+    (if (null? result)
+        (display "No path found.")
+        (begin
+          (display "Stations between ")
+          (display station1)
+          (display " and ")
+          (display station2)
+          (display ":\n")
+          (for-each (lambda (station-info)
+                      (display (car station-info))
+                      (display " -> ")
+                      (display (cadr station-info))
+                      (display " (Time: ")
+                      (display (caddr station-info))
+                      (display ")\n"))
+                    result)))))
 
 
 
