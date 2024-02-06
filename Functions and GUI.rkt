@@ -9,95 +9,28 @@
 (define start-stations-list '())
 
 ;Get stations
-
 (define (get-stations start-line-v)
   (cond
-    [(equal? start-line-v "Northern Line")
-     (define edges (hash-ref northern-line 'edges '()))
-     (for ([i (reverse edges)])
-       (let ([station1 (car i)]
-             [station2 (cadr i)]
-             [time (caddr i)])
-         (set! start-stations-list (cons station1 start-stations-list))))]
+    [(equal? start-line-v "Northern Line") (add-to-stations-list northern-line)]
+    [(equal? start-line-v "Bakerloo Line") (add-to-stations-list bakerloo-line)]    
+    [(equal? start-line-v "Central Line") (add-to-stations-list central-line)]    
+    [(equal? start-line-v "District Line") (add-to-stations-list district-line)] 
+    [(equal? start-line-v "Hammersmith City Line") (add-to-stations-list hammersmith-city-line)]    
+    [(equal? start-line-v "Jubilee Line") (add-to-stations-list jubilee-line)]    
+    [(equal? start-line-v "Metropolitan Line") (add-to-stations-list metropolitan-line)]
+    [(equal? start-line-v "Piccadilly Line") (add-to-stations-list piccadilly-line)]
+    [(equal? start-line-v "Victoria Line") (add-to-stations-list victoria-line)]
+    [(equal? start-line-v "Circle Line") (add-to-stations-list circle-line)]  
+    [else (printf "Invalid line")]))
 
-[(equal? start-line-v "Bakerloo Line")
- (define edges (hash-ref bakerloo-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Central Line")
- (define edges (hash-ref central-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "District Line")
- (define edges (hash-ref district-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Hammersmith City Line")
- (define edges (hash-ref hammersmith-city-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Jubilee Line")
- (define edges (hash-ref jubilee-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Metropolitan Line")
- (define edges (hash-ref metropolitan-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Piccadilly Line")
- (define edges (hash-ref piccadilly-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Victoria Line")
- (define edges (hash-ref victoria-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[(equal? start-line-v "Circle Line")
- (define edges (hash-ref circle-line 'edges '()))
- (for ([i (reverse edges)])
-   (let ([station1 (car i)]
-         [station2 (cadr i)]
-         [time (caddr i)])
-     (set! start-stations-list (cons station1 start-stations-list))))]
-
-[else (printf " ")]))
+(define (add-to-stations-list line)
+  (for ([i (reverse (hash-ref line 'edges '()))])
+    (set! start-stations-list (cons (car i) start-stations-list))))
  
 ;Window
 (define myframe (new frame%
     [label "World's best travel app"]
-    [width 500]
+    [width 300]
     [height 100]))
 
 (new message%
@@ -115,7 +48,7 @@
 
 ;Start line input field
 (define start-line (new combo-field%
-    [label "             start-line:      "]
+    [label "             Start line:      "]
     [parent myframe]
     [choices lines]
     [callback (lambda (event value)
@@ -132,7 +65,7 @@
 (define (initialize-start-station)
   (set! start-station
         (new combo-field%
-                    [label "       start-station:      "]
+                    [label "       Start station:      "]
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
@@ -148,7 +81,7 @@
         ; Create a new combo-field for the updated stations list
         (let ([new-start-station
                (new combo-field%
-                    [label "       start-station:      "]
+                    [label "       Start Station:      "]
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
@@ -180,7 +113,7 @@
 (define (initialize-destination-line)
   (set! destination-line
         (new combo-field%
-             [label "destination-line:       "]
+             [label "Destination Line:       "]
              [parent myframe]
              [choices lines]
              [callback (lambda (event value)
@@ -211,7 +144,7 @@
 (define (initialize-destination-station)
   (set! destination-station
         (new combo-field%
-                    [label "destination-station: "]
+                    [label "Destination Station: "]
                     [parent myframe]
                     [choices start-stations-list]
                     [enabled #t])))
