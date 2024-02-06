@@ -48,7 +48,7 @@
 
 ;Start line input field
 (define start-line (new combo-field%
-    [label "             Start line:      "]
+    [label "             line:      "]
     [parent myframe]
     [choices lines]
     [callback (lambda (event value)
@@ -69,7 +69,7 @@
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
-                                (create-destination-line))]
+                                (update-destination-station))]
                     [enabled #t])))
 
 ; Function to update start-station choices when stations-list is updated
@@ -86,7 +86,7 @@
                     [choices start-stations-list]
                     [callback (lambda (event value)
                                 (printf "Selected line (destination): ~a\n" (send start-station get-value))
-                                (create-destination-line))]
+                                (update-destination-station))]
                     [enabled #t])])
           (set! start-station new-start-station)))
       (initialize-start-station)))
@@ -150,7 +150,8 @@
                     [choices start-stations-list]
                     [callback (lambda (a b)
                                 (printf "Selected line (destination): ~a\n" (send destination-station get-value))
-                                (create-route (send start-line get-value) (send start-station get-value) (send destination-line get-value) (send destination-station get-value)))]
+                                (create-route (send start-line get-value) (send start-station get-value) (send start-line get-value) (send destination-station get-value))
+                                (update-destination-path))]
                     [enabled #t])))
 
 ; Function to update start-station choices when stations-list is updated
@@ -165,6 +166,41 @@
         ; If destination is #f, initialize new destination components
         (initialize-destination-station))))
 
+
+
+
+(define path-msg #f)
+(define destination-path #f) ; Define start-station initially as #f
+
+
+(define (initialize-path-msg)
+  (set! path-msg
+        (new message%
+             [label "Here is your Route:"]
+             [parent myframe])))
+
+(define (initialize-destination-path)
+  (set! destination-path
+        (new radio-box%
+                    [label " "]
+                    [parent myframe]
+                    [choices new-path-list]
+                    [selection #f]
+                    [enabled #f])))
+
+
+(define (update-destination-path)
+  (if (not (equal? destination-path #f))
+      (begin
+        (send myframe delete-child path-msg)
+        (send myframe delete-child destination-path)
+         ; Create new destination components
+        (initialize-path-msg)
+        (initialize-destination-path))
+      (begin
+        ; If destination is #f, initialize new destination components
+        (initialize-path-msg)
+        (initialize-destination-path))))
 
 (send myframe show #t)
 
@@ -282,35 +318,37 @@
         [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
         [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
 
+(define path-list '())
+(define new-path-list '())
+
+(define (find-path-after-station path-list station1 station2)
+  (let loop ((lst path-list) (found? #f) (result '()))
+    (cond
+      ((null? lst) (if found? (reverse result) '()))  ; If the end of the list is reached, return the result
+      ((equal? (car lst) station1) (loop (cdr lst) #t result))  ; If station1 is found, set found? to true
+      ((equal? (car lst) station2) (loop '() #t (cons (car lst) result)))  ; If station2 is found, set found? to true and return the result
+      (found? (loop (cdr lst) #t (cons (car lst) result)))  ; If station1 is found and found? is true, accumulate elements
+      (else (loop (cdr lst) #f result)))))  ; Otherwise, continue iterating
 
 (define (all-stations-with-times line station1 station2)
-  (define (loop edges result)
-    (cond
-      ((null? edges) result) ; No more stations
-      ((equal? (caar edges) station2) result) ; Reached the end station
-      ((equal? (caar edges) station1)
-       (let ((next-station (cadar edges))
-             (time (caddr (car edges))))
-         (loop (cdr edges) (cons (list station1 next-station time) result))))
-      (else (loop (cdr edges) result))))
+  (for ([i (hash-ref line 'edges '())])
+    (set! path-list (cons (car i) path-list)))
 
-  (let ((result (loop (hash-ref line 'edges '()) '())))
-    (if (null? result)
-        (display "No path found.")
-        (begin
-          (display "Stations between ")
-          (display station1)
-          (display " and ")
-          (display station2)
-          (display ":\n")
-          (for-each (lambda (station-info)
-                      (display (car station-info))
-                      (display " -> ")
-                      (display (cadr station-info))
-                      (display " (Time: ")
-                      (display (caddr station-info))
-                      (display ")\n"))
-                    result)))))
+  (set! new-path-list (find-path-after-station path-list station1 station2)) ; Populate new-path-list
+
+  (if (null? new-path-list)
+      (display "No path found.")
+      (begin
+        (display "Stations between ")
+        (display station1)
+        (display " and ")
+        (display station2)
+        (display ":\n")
+        (for-each (lambda (station)
+                    (display station)
+                    (display " -> "))
+                 new-path-list))))
+
 
 
 
@@ -318,3 +356,5 @@
     (printf "create-route-different-lines")
     (display line-start)
     (display line-end))
+
+(randomize-line-strike)
