@@ -85,6 +85,7 @@
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
+                                (printf "Selected line (destination): ~a\n" (send start-station get-value))
                                 (create-destination-line))]
                     [enabled #t])])
           (set! start-station new-start-station)))
@@ -119,7 +120,7 @@
              [callback (lambda (event value)
                 (printf "Selected line (destination): ~a\n" (send destination-line get-value)) ; Debugging: Print selected line
                 (set! start-stations-list '())
-                (get-stations (send start-line get-value))
+                (get-stations (send destination-line get-value))
                         (update-destination-station))]
              [enabled #t])))
 
@@ -147,6 +148,10 @@
                     [label "Destination Station: "]
                     [parent myframe]
                     [choices start-stations-list]
+                    [callback (lambda (a b)
+                                (printf "Selected line (destination): ~a\n" (send destination-station get-value))
+                                (create-route (send start-line get-value) (send start-station get-value) (send destination-line get-value) (send destination-station get-value))
+                                (update-destination-path))]
                     [enabled #t])))
 
 ; Function to update start-station choices when stations-list is updated
@@ -161,6 +166,41 @@
         ; If destination is #f, initialize new destination components
         (initialize-destination-station))))
 
+
+
+
+(define path-msg #f)
+(define destination-path #f) ; Define start-station initially as #f
+
+
+(define (initialize-path-msg)
+  (set! path-msg
+        (new message%
+             [label "Here is your Route:"]
+             [parent myframe])))
+
+(define (initialize-destination-path)
+  (set! destination-path
+        (new radio-box%
+                    [label " "]
+                    [parent myframe]
+                    [choices new-path-list]
+                    [selection #f]
+                    [enabled #f])))
+
+
+(define (update-destination-path)
+  (if (not (equal? destination-path #f))
+      (begin
+        (send myframe delete-child path-msg)
+        (send myframe delete-child destination-path)
+         ; Create new destination components
+        (initialize-path-msg)
+        (initialize-destination-path))
+      (begin
+        ; If destination is #f, initialize new destination components
+        (initialize-path-msg)
+        (initialize-destination-path))))
 
 (send myframe show #t)
 
@@ -259,6 +299,61 @@
         [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
 
 
+; main function
+
+(define (create-route line-start station-start line-end station-end)
+  (cond [(equal? line-start line-end) (create-route-same-lines line-start station-start station-end)]
+        [(create-route-different-lines line-start line-end)]))
+
+(define (create-route-same-lines line station-start station-end)
+      (cond
+        [(equal? line "Northern Line") (all-stations-with-times northern-line station-start station-end)]
+        [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
+        [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
+        [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
+        [(equal? line "District Line") (all-stations-with-times district-line station-start station-end)]
+        [(equal? line "Hammersmith City Line") (all-stations-with-times hammersmith-city-line station-start station-end)]
+        [(equal? line "Jubilee Line") (all-stations-with-times jubilee-line station-start station-end)]
+        [(equal? line "Metropolitan Line") (all-stations-with-times metropolitan-line station-start station-end)]
+        [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
+        [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
+
+(define path-list '())
+(define new-path-list '())
+
+(define (find-path-after-station path-list station1 station2)
+  (let loop ((lst path-list) (found? #f) (result '()))
+    (cond
+      ((null? lst) (if found? (reverse result) '()))  ; If the end of the list is reached, return the result
+      ((equal? (car lst) station1) (loop (cdr lst) #t result))  ; If station1 is found, set found? to true
+      ((equal? (car lst) station2) (loop '() #t (cons (car lst) result)))  ; If station2 is found, set found? to true and return the result
+      (found? (loop (cdr lst) #t (cons (car lst) result)))  ; If station1 is found and found? is true, accumulate elements
+      (else (loop (cdr lst) #f result)))))  ; Otherwise, continue iterating
+
+(define (all-stations-with-times line station1 station2)
+  (for ([i (hash-ref line 'edges '())])
+    (set! path-list (cons (car i) path-list)))
+
+  (set! new-path-list (find-path-after-station path-list station1 station2)) ; Populate new-path-list
+
+  (if (null? new-path-list)
+      (display "No path found.")
+      (begin
+        (display "Stations between ")
+        (display station1)
+        (display " and ")
+        (display station2)
+        (display ":\n")
+        (for-each (lambda (station)
+                    (display station)
+                    (display " -> "))
+                 new-path-list))))
 
 
 
+
+  (define (create-route-different-lines line-start line-end)
+    (printf "create-route-different-lines")
+    (display line-start)
+    (display line-end))
+(randomize-line-strike)
