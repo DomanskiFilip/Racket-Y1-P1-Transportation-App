@@ -119,7 +119,7 @@
              [callback (lambda (event value)
                 (printf "Selected line (destination): ~a\n" (send destination-line get-value)) ; Debugging: Print selected line
                 (set! start-stations-list '())
-                (get-stations (send destination-line get-value))
+                (get-stations (send start-line get-value))
                         (update-destination-station))]
              [enabled #t])))
 
