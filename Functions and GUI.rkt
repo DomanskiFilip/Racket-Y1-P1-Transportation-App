@@ -85,6 +85,7 @@
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
+                                (printf "Selected line (destination): ~a\n" (send start-station get-value))
                                 (create-destination-line))]
                     [enabled #t])])
           (set! start-station new-start-station)))
@@ -147,6 +148,9 @@
                     [label "Destination Station: "]
                     [parent myframe]
                     [choices start-stations-list]
+                    [callback (lambda (a b)
+                                (printf "Selected line (destination): ~a\n" (send destination-station get-value))
+                                (create-route (send start-line get-value) (send start-station get-value) (send destination-line get-value) (send destination-station get-value)))]
                     [enabled #t])))
 
 ; Function to update start-station choices when stations-list is updated
@@ -259,6 +263,69 @@
         [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
 
 
+; main function
+
+(define (create-route line-start station-start line-end station-end)
+  (cond [(equal? line-start line-end) (create-route-same-lines line-start station-start station-end)]
+        [(create-route-different-lines line-start line-end)]))
+
+(define (create-route-same-lines line station-start station-end)
+      (cond
+        [(equal? line "Northern Line") (all-stations-with-times northern-line station-start station-end)]
+        [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
+        [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
+        [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
+        [(equal? line "District Line") (all-stations-with-times district-line station-start station-end)]
+        [(equal? line "Hammersmith City Line") (all-stations-with-times hammersmith-city-line station-start station-end)]
+        [(equal? line "Jubilee Line") (all-stations-with-times jubilee-line station-start station-end)]
+        [(equal? line "Metropolitan Line") (all-stations-with-times metropolitan-line station-start station-end)]
+        [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
+        [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
+
+
+(define (find-path line start-station end-station visited-path)
+  (define (dfs station)
+    (if (equal? station end-station)
+        (list end-station)
+        (let ((neighbors (get-neighbors line station)))
+          (let loop ((neighbors neighbors))
+            (cond
+              ((null? neighbors) '())
+              ((member (car neighbors) visited-path) (loop (cdr neighbors)))
+              (else
+               (let ((path (dfs (car neighbors))))
+                 (if path
+                     (cons station path)
+                     (loop (cdr neighbors))))))))))
+  (dfs start-station))
+
+(define (get-neighbors line station)
+  (map car (filter (lambda (edge) (equal? (car edge) station)) (hash-ref line 'edges '()))))
+
+(define (all-stations-with-times line station1 station2)
+  (let ((path (find-path line station1 station2 '())))
+    (if (null? path)
+        '() ; No path found
+        (let loop ((path path) (result '()))
+          (cond
+            ((null? (cdr path)) (reverse result))
+            (else
+             (let* ((current-station (car path))
+                    (next-station (cadr path))
+                    (time (find-edge-time line current-station next-station)))
+               (loop (cdr path) (cons (list current-station next-station time) result)))))))))
+
+(define (find-edge-time line station1 station2)
+  (let ((edges (hash-ref line 'edges '())))
+    (let ((edge (assoc (list station1 station2) edges)))
+      (if edge
+          (caddr edge)
+          0)))) ; Default time if edge not found
 
 
 
+
+  (define (create-route-different-lines line-start line-end)
+    (printf "create-route-different-lines")
+    (display line-start)
+    (display line-end))
