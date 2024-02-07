@@ -13,10 +13,10 @@
   (cond
     [(equal? start-line-v "Northern Line High Barnet via bank") (add-to-stations-list northern-line-high-barnet-via-bank)]
     [(equal? start-line-v "Northern Line Edgware via bank") (add-to-stations-list northern-line-edgware-via-bank)]
-  ;  [(equal? start-line-v "Northern Line Mill Hill East via bank") (add-to-stations-list northern-line-mill-hill-east-via-bank)]
-  ;  [(equal? start-line-v "Northern Line High Barnet via warren street") (add-to-stations-list northern-line-high-barnet-via-warren-street)]
-  ;  [(equal? start-line-v "Northern Line Edgware via warren street") (add-to-stations-list northern-line-mill-hill-east-via-warren-street)]
-  ;  [(equal? start-line-v "Northern Line Mill Hill East via warren street") (add-to-stations-list northern-line-edgware-via-warren-street)]
+    ;  [(equal? start-line-v "Northern Line Mill Hill East via bank") (add-to-stations-list northern-line-mill-hill-east-via-bank)]
+    ;  [(equal? start-line-v "Northern Line High Barnet via warren street") (add-to-stations-list northern-line-high-barnet-via-warren-street)]
+    ;  [(equal? start-line-v "Northern Line Edgware via warren street") (add-to-stations-list northern-line-mill-hill-east-via-warren-street)]
+    ;  [(equal? start-line-v "Northern Line Mill Hill East via warren street") (add-to-stations-list northern-line-edgware-via-warren-street)]
     [(equal? start-line-v "Bakerloo Line") (add-to-stations-list bakerloo-line)]    
     [(equal? start-line-v "Central Line") (add-to-stations-list central-line)]    
     [(equal? start-line-v "District Line") (add-to-stations-list district-line)] 
@@ -34,9 +34,9 @@
  
 ;Window
 (define myframe (new frame%
-    [label "World's best travel app"]
-    [width 300]
-    [height 100]))
+                     [label "World's best travel app"]
+                     [width 300]
+                     [height 100]))
 
 (new message%
      [label "Delays due to:"]
@@ -53,15 +53,15 @@
 
 ;Start line input field
 (define start-line (new combo-field%
-    [label "             line:      "]
-    [parent myframe]
-    [choices lines]
-    [callback (lambda (event value)
-                (printf "Selected line (start): ~a\n" (send start-line get-value)) ; Debugging: Print selected line
-                (set! start-stations-list '())
-                (get-stations (send start-line get-value))
-                (update-start-station))]
-    [enabled #t]))
+                        [label "                        Line: "]
+                        [parent myframe]
+                        [choices lines]
+                        [callback (lambda (event value)
+                                    (printf "Selected line (start): ~a\n" (send start-line get-value)) ; Debugging: Print selected line
+                                    (set! start-stations-list '())
+                                    (get-stations (send start-line get-value))
+                                    (update-start-station))]
+                        [enabled #t]))
 
 ; Delay the initialization of start-station until stations-list is populated
 (define start-station #f) ; Define start-station initially as #f
@@ -70,12 +70,12 @@
 (define (initialize-start-station)
   (set! start-station
         (new combo-field%
-                    [label "       Start station:      "]
-                    [parent myframe]
-                    [choices start-stations-list]
-                    [callback (lambda (event value)
-                                (update-destination-station))]
-                    [enabled #t])))
+             [label "           Start station: "]
+             [parent myframe]
+             [choices start-stations-list]
+             [callback (lambda (event value)
+                         (update-destination-station))]
+             [enabled #t])))
 
 ; Function to update start-station choices when stations-list is updated
 (define (update-start-station)
@@ -86,7 +86,7 @@
         ; Create a new combo-field for the updated stations list
         (let ([new-start-station
                (new combo-field%
-                    [label "       Start Station:      "]
+                    [label "           Start station: "]
                     [parent myframe]
                     [choices start-stations-list]
                     [callback (lambda (event value)
@@ -124,14 +124,14 @@
              [parent myframe]
              [choices lines]
              [callback (lambda (event value)
-                (printf "Selected line (destination): ~a\n" (send destination-line get-value)) ; Debugging: Print selected line
-                (set! start-stations-list '())
-                (get-stations (send destination-line get-value))
-                        (update-destination-station))]
+                         (printf "Selected line (destination): ~a\n" (send destination-line get-value)) ; Debugging: Print selected line
+                         (set! start-stations-list '())
+                         (get-stations (send destination-line get-value))
+                         (update-destination-station))]
              [enabled #t])))
 
 (define (create-destination-line)
-   (if (not (equal? destination-line #f))
+  (if (not (equal? destination-line #f))
       (begin
         ; Remove the previous destination components from the parent frame
         (send myframe delete-child destination-msg)
@@ -144,21 +144,20 @@
         (initialize-destination-msg)
         (initialize-destination-line))))
 
-
 (define destination-station #f) ; Define start-station initially as #f
 
 ; Function to initialize start-station once stations-list is populated
 (define (initialize-destination-station)
   (set! destination-station
         (new combo-field%
-                    [label "Destination Station: "]
-                    [parent myframe]
-                    [choices start-stations-list]
-                    [callback (lambda (a b)
-                                (printf "Selected line (destination): ~a\n" (send destination-station get-value))
-                                (create-route (send start-line get-value) (send start-station get-value) (send start-line get-value) (send destination-station get-value))
-                                (update-destination-path))]
-                    [enabled #t])))
+             [label "Destination Station: "]
+             [parent myframe]
+             [choices start-stations-list]
+             [callback (lambda (a b)
+                         (printf "Selected line (destination): ~a\n" (send destination-station get-value))
+                         (create-route (send start-line get-value) (send start-station get-value) (send start-line get-value) (send destination-station get-value))
+                         (update-destination-path))]
+             [enabled #t])))
 
 ; Function to update start-station choices when stations-list is updated
 (define (update-destination-station)
@@ -166,42 +165,40 @@
       (begin
         ; Remove the previous start-station from the parent frame
         (send myframe delete-child destination-station)
-         ; Create new destination components
+        ; Create new destination components
         (initialize-destination-station))
       (begin
         ; If destination is #f, initialize new destination components
         (initialize-destination-station))))
 
-
-
-
 (define path-msg #f)
 (define destination-path #f) ; Define start-station initially as #f
 (define path-time-msg #f)
 
-
 (define (initialize-path-time-msg)
   (set! path-time-msg
         (new message%
-             [label (string-append  "Final Station: " (send destination-station get-value) "\n\n Route will take: " (number->string (total-time new-time-list)) " minutes\n")]
+             [label (string-append "Final Station: " (send destination-station get-value) "\nRoute will take: " (number->string (total-time new-time-list)) " minutes")]
              [parent myframe])))
 
 
 (define (initialize-path-msg)
   (set! path-msg
         (new message%
-             [label (string-append "Here is your Route:\n" "Starting Station: " (send start-station get-value))]
+             [label (string-append "Starting Station: " (send start-station get-value))]
              [parent myframe])))
 
 
 (define (initialize-destination-path)
   (set! destination-path
         (new radio-box%
-                    [label " "]
-                    [parent myframe]
-                    [choices new-path-list]
-                    [selection #f]
-                    [enabled #f])))
+             [label " "]
+             [parent myframe]
+             [choices new-path-list]
+             [selection #f]
+             [enabled #f])))
+
+
 
 
 (define (update-destination-path)
@@ -210,7 +207,7 @@
         (send myframe delete-child path-msg)
         (send myframe delete-child destination-path)
         (send myframe delete-child path-time-msg)
-         ; Create new destination components
+        ; Create new destination components
         (initialize-path-msg)
         (initialize-destination-path)
         (initialize-path-time-msg))
@@ -260,11 +257,11 @@
 (define (get-time line station1 station2)
   (define edges (hash-ref line 'edges '()))
   (define time (ormap
-                  (lambda (edge)
-                    (if (equal? station1 (car edge)) 
-                        (if (equal? station2 (cadr edge)) (caddr edge) #f)
-                        (if (equal? station1 (cadr edge)) (caddr edge) #f)))
-                  edges))
+                (lambda (edge)
+                  (if (equal? station1 (car edge)) 
+                      (if (equal? station2 (cadr edge)) (caddr edge) #f)
+                      (if (equal? station1 (cadr edge)) (caddr edge) #f)))
+                edges))
   time)
 
 ; If the program is to find connections between the lines, then the defines would have to change into 
@@ -304,22 +301,22 @@
 
 ;If Northern Line is chosen then strike Northern Line, if Bakerloo Line is chosen then strike Bakerloo Line etc.
 (define (randomize-line-strike)
-      (cond
-        [(equal? chosen-line "Northern Line High Barnet via bank") (randomize-strike northern-line-high-barnet-via-bank)]
-        [(equal? chosen-line "Northern Line Edgware via bank") (randomize-strike northern-line-edgware-via-bank)]
-      ;  [(equal? chosen-line "Northern Line Mill Hill East via Bank") (randomize-strike northern-line-mill-hill-east-via-bank)]
-      ;  [(equal? chosen-line "Northern Line High Barnet via Warren Street") (randomize-strike northern-line-high-barnet-via-warren-street)]
-      ;  [(equal? chosen-line "Northern Line Edgware via Warren Street") (randomize-strike northern-line-edgware-via-warren-street)]
-      ;  [(equal? chosen-line "Northern Line Mill Hill East via Warren Street") (randomize-strike northern-line-mill-hill-east-via-warren-street)]
-        [(equal? chosen-line "Bakerloo Line") (randomize-strike bakerloo-line)]
-        [(equal? chosen-line "Central Line") (randomize-strike central-line)]
-        [(equal? chosen-line "Circle Line") (randomize-strike circle-line)]
-        [(equal? chosen-line "District Line") (randomize-strike district-line)]
-        [(equal? chosen-line "Hammersmith City Line") (randomize-strike hammersmith-city-line)]
-        [(equal? chosen-line "Jubilee Line") (randomize-strike jubilee-line)]
-        [(equal? chosen-line "Metropolitan Line") (randomize-strike metropolitan-line)]
-        [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
-        [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
+  (cond
+    [(equal? chosen-line "Northern Line High Barnet via bank") (randomize-strike northern-line-high-barnet-via-bank)]
+    [(equal? chosen-line "Northern Line Edgware via bank") (randomize-strike northern-line-edgware-via-bank)]
+    ;  [(equal? chosen-line "Northern Line Mill Hill East via Bank") (randomize-strike northern-line-mill-hill-east-via-bank)]
+    ;  [(equal? chosen-line "Northern Line High Barnet via Warren Street") (randomize-strike northern-line-high-barnet-via-warren-street)]
+    ;  [(equal? chosen-line "Northern Line Edgware via Warren Street") (randomize-strike northern-line-edgware-via-warren-street)]
+    ;  [(equal? chosen-line "Northern Line Mill Hill East via Warren Street") (randomize-strike northern-line-mill-hill-east-via-warren-street)]
+    [(equal? chosen-line "Bakerloo Line") (randomize-strike bakerloo-line)]
+    [(equal? chosen-line "Central Line") (randomize-strike central-line)]
+    [(equal? chosen-line "Circle Line") (randomize-strike circle-line)]
+    [(equal? chosen-line "District Line") (randomize-strike district-line)]
+    [(equal? chosen-line "Hammersmith City Line") (randomize-strike hammersmith-city-line)]
+    [(equal? chosen-line "Jubilee Line") (randomize-strike jubilee-line)]
+    [(equal? chosen-line "Metropolitan Line") (randomize-strike metropolitan-line)]
+    [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
+    [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
 
 
 ; main function
@@ -329,22 +326,22 @@
         [(create-route-different-lines line-start line-end)]))
 
 (define (create-route-same-lines line station-start station-end)
-      (cond
-        [(equal? line "Northern Line High Barnet via bank") (all-stations-with-times northern-line-high-barnet-via-bank station-start station-end)]
-        [(equal? line "Northern Line Edgware via bank") (all-stations-with-times northern-line-edgware-via-bank station-start station-end)]
-     ;   [(equal? line "Northern Line Mill Hill East via Bank") (all-stations-with-times northern-line-mill-hill-east-via-bank station-start station-end)]
-     ;   [(equal? line "Northern Line High Barnet via Warren Street") (all-stations-with-times northern-line-high-barnet-via-warren-street station-start station-end)]
-     ;   [(equal? line "Northern Line Edgware via Warren Street") (all-stations-with-times northern-line-edgware-via-warren-street station-start station-end)]
-     ;   [(equal? line "Northern Line Mill Hill East via Warren Street") (all-stations-with-times northern-line-mill-hill-east-via-warren-street station-start station-end)]
-        [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
-        [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
-        [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
-        [(equal? line "District Line") (all-stations-with-times district-line station-start station-end)]
-        [(equal? line "Hammersmith City Line") (all-stations-with-times hammersmith-city-line station-start station-end)]
-        [(equal? line "Jubilee Line") (all-stations-with-times jubilee-line station-start station-end)]
-        [(equal? line "Metropolitan Line") (all-stations-with-times metropolitan-line station-start station-end)]
-        [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
-        [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
+  (cond
+    [(equal? line "Northern Line High Barnet via bank") (all-stations-with-times northern-line-high-barnet-via-bank station-start station-end)]
+    [(equal? line "Northern Line Edgware via bank") (all-stations-with-times northern-line-edgware-via-bank station-start station-end)]
+    ;   [(equal? line "Northern Line Mill Hill East via Bank") (all-stations-with-times northern-line-mill-hill-east-via-bank station-start station-end)]
+    ;   [(equal? line "Northern Line High Barnet via Warren Street") (all-stations-with-times northern-line-high-barnet-via-warren-street station-start station-end)]
+    ;   [(equal? line "Northern Line Edgware via Warren Street") (all-stations-with-times northern-line-edgware-via-warren-street station-start station-end)]
+    ;   [(equal? line "Northern Line Mill Hill East via Warren Street") (all-stations-with-times northern-line-mill-hill-east-via-warren-street station-start station-end)]
+    [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
+    [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
+    [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
+    [(equal? line "District Line") (all-stations-with-times district-line station-start station-end)]
+    [(equal? line "Hammersmith City Line") (all-stations-with-times hammersmith-city-line station-start station-end)]
+    [(equal? line "Jubilee Line") (all-stations-with-times jubilee-line station-start station-end)]
+    [(equal? line "Metropolitan Line") (all-stations-with-times metropolitan-line station-start station-end)]
+    [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
+    [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
 
 (define path-list '())
 (define new-path-list '())
@@ -407,14 +404,9 @@
         (display " minutes) -> ")
         (display-stations-with-times (cdr stations) (cdr times)))))
 
-
-
-
-
-
-  (define (create-route-different-lines line-start line-end)
-    (printf "create-route-different-lines")
-    (display line-start)
-    (display line-end))
+(define (create-route-different-lines line-start line-end)
+  (printf "create-route-different-lines")
+  (display line-start)
+  (display line-end))
 
 (randomize-line-strike)
