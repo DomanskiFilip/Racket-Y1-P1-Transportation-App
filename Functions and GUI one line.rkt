@@ -4,7 +4,7 @@
 
 ;GUI
 
-(define lines '("Northern Line High Barnet via bank" "Northern Line Mill Hill East via bank" "Northern Line Edgware via bank" "Northern Line High Barnet via warren street" "Northern Line Mill Hill East via warren street" "Northern Line Edgware via warren street" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
+(define lines '("Northern Line High Barnet via bank" "Northern Line Edgware via bank" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
 (define chosen-line (list-ref lines (random (length lines))))
 (define start-stations-list '())
 
@@ -13,10 +13,10 @@
   (cond
     [(equal? start-line-v "Northern Line High Barnet via bank") (add-to-stations-list northern-line-high-barnet-via-bank)]
     [(equal? start-line-v "Northern Line Edgware via bank") (add-to-stations-list northern-line-edgware-via-bank)]
-    [(equal? start-line-v "Northern Line Mill Hill East via bank") (add-to-stations-list northern-line-mill-hill-east-via-bank)]
-    [(equal? start-line-v "Northern Line High Barnet via warren street") (add-to-stations-list northern-line-high-barnet-via-warren-street)]
-    [(equal? start-line-v "Northern Line Edgware via warren street") (add-to-stations-list northern-line-mill-hill-east-via-warren-street)]
-    [(equal? start-line-v "Northern Line Mill Hill East via warren street") (add-to-stations-list northern-line-edgware-via-warren-street)]
+  ;  [(equal? start-line-v "Northern Line Mill Hill East via bank") (add-to-stations-list northern-line-mill-hill-east-via-bank)]
+  ;  [(equal? start-line-v "Northern Line High Barnet via warren street") (add-to-stations-list northern-line-high-barnet-via-warren-street)]
+  ;  [(equal? start-line-v "Northern Line Edgware via warren street") (add-to-stations-list northern-line-mill-hill-east-via-warren-street)]
+  ;  [(equal? start-line-v "Northern Line Mill Hill East via warren street") (add-to-stations-list northern-line-edgware-via-warren-street)]
     [(equal? start-line-v "Bakerloo Line") (add-to-stations-list bakerloo-line)]    
     [(equal? start-line-v "Central Line") (add-to-stations-list central-line)]    
     [(equal? start-line-v "District Line") (add-to-stations-list district-line)] 
@@ -109,6 +109,7 @@
 ; DESTINATION
 (define destination-msg #f)
 (define destination-line #f)
+(define destination-time-msg #f)
 
 (define (initialize-destination-msg)
   (set! destination-msg
@@ -176,13 +177,22 @@
 
 (define path-msg #f)
 (define destination-path #f) ; Define start-station initially as #f
+(define path-time-msg #f)
+
+
+(define (initialize-path-time-msg)
+  (set! path-time-msg
+        (new message%
+             [label (string-append  "Final Station: " (send destination-station get-value) "\n\n Route will take: " (number->string (total-time new-time-list)) " minutes\n")]
+             [parent myframe])))
 
 
 (define (initialize-path-msg)
   (set! path-msg
         (new message%
-             [label "Here is your Route:"]
+             [label (string-append "Here is your Route:\n" "Starting Station: " (send start-station get-value))]
              [parent myframe])))
+
 
 (define (initialize-destination-path)
   (set! destination-path
@@ -199,13 +209,16 @@
       (begin
         (send myframe delete-child path-msg)
         (send myframe delete-child destination-path)
+        (send myframe delete-child path-time-msg)
          ; Create new destination components
         (initialize-path-msg)
-        (initialize-destination-path))
+        (initialize-destination-path)
+        (initialize-path-time-msg))
       (begin
         ; If destination is #f, initialize new destination components
         (initialize-path-msg)
-        (initialize-destination-path))))
+        (initialize-destination-path)
+        (initialize-path-time-msg))))
 
 (send myframe show #t)
 
@@ -293,11 +306,11 @@
 (define (randomize-line-strike)
       (cond
         [(equal? chosen-line "Northern Line High Barnet via bank") (randomize-strike northern-line-high-barnet-via-bank)]
-        [(equal? chosen-line "Northern Line Edgware via Bank") (randomize-strike northern-line-edgware-via-bank)]
-        [(equal? chosen-line "Northern Line Mill Hill East via Bank") (randomize-strike northern-line-mill-hill-east-via-bank)]
-        [(equal? chosen-line "Northern Line High Barnet via Warren Street") (randomize-strike northern-line-high-barnet-via-warren-street)]
-        [(equal? chosen-line "Northern Line Edgware via Warren Street") (randomize-strike northern-line-edgware-via-warren-street)]
-        [(equal? chosen-line "Northern Line Mill Hill East via Warren Street") (randomize-strike northern-line-mill-hill-east-via-warren-street)]
+        [(equal? chosen-line "Northern Line Edgware via bank") (randomize-strike northern-line-edgware-via-bank)]
+      ;  [(equal? chosen-line "Northern Line Mill Hill East via Bank") (randomize-strike northern-line-mill-hill-east-via-bank)]
+      ;  [(equal? chosen-line "Northern Line High Barnet via Warren Street") (randomize-strike northern-line-high-barnet-via-warren-street)]
+      ;  [(equal? chosen-line "Northern Line Edgware via Warren Street") (randomize-strike northern-line-edgware-via-warren-street)]
+      ;  [(equal? chosen-line "Northern Line Mill Hill East via Warren Street") (randomize-strike northern-line-mill-hill-east-via-warren-street)]
         [(equal? chosen-line "Bakerloo Line") (randomize-strike bakerloo-line)]
         [(equal? chosen-line "Central Line") (randomize-strike central-line)]
         [(equal? chosen-line "Circle Line") (randomize-strike circle-line)]
@@ -318,11 +331,11 @@
 (define (create-route-same-lines line station-start station-end)
       (cond
         [(equal? line "Northern Line High Barnet via bank") (all-stations-with-times northern-line-high-barnet-via-bank station-start station-end)]
-        [(equal? line "Northern Line Edgware via Bank") (all-stations-with-times northern-line-edgware-via-bank station-start station-end)]
-        [(equal? line "Northern Line Mill Hill East via Bank") (all-stations-with-times northern-line-mill-hill-east-via-bank station-start station-end)]
-        [(equal? line "Northern Line High Barnet via Warren Street") (all-stations-with-times northern-line-high-barnet-via-warren-street station-start station-end)]
-        [(equal? line "Northern Line Edgware via Warren Street") (all-stations-with-times northern-line-edgware-via-warren-street station-start station-end)]
-        [(equal? line "Northern Line Mill Hill East via Warren Street") (all-stations-with-times northern-line-mill-hill-east-via-warren-street station-start station-end)]
+        [(equal? line "Northern Line Edgware via bank") (all-stations-with-times northern-line-edgware-via-bank station-start station-end)]
+     ;   [(equal? line "Northern Line Mill Hill East via Bank") (all-stations-with-times northern-line-mill-hill-east-via-bank station-start station-end)]
+     ;   [(equal? line "Northern Line High Barnet via Warren Street") (all-stations-with-times northern-line-high-barnet-via-warren-street station-start station-end)]
+     ;   [(equal? line "Northern Line Edgware via Warren Street") (all-stations-with-times northern-line-edgware-via-warren-street station-start station-end)]
+     ;   [(equal? line "Northern Line Mill Hill East via Warren Street") (all-stations-with-times northern-line-mill-hill-east-via-warren-street station-start station-end)]
         [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
         [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
         [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
@@ -335,22 +348,24 @@
 
 (define path-list '())
 (define new-path-list '())
-
-(define (find-path-after-station path-list station1 station2)
-  (let loop ((lst path-list) (found? #f) (result '()))
-    (cond
-      ((null? lst) (if found? (reverse result) '()))  ; If the end of the list is reached, return the result
-      ((equal? (car lst) station1) (loop (cdr lst) #t result))  ; If station1 is found, set found? to true
-      ((equal? (car lst) station2) (loop '() #t (cons (car lst) result)))  ; If station2 is found, set found? to true and return the result
-      (found? (loop (cdr lst) #t (cons (car lst) result)))  ; If station1 is found and found? is true, accumulate elements
-      (else (loop (cdr lst) #f result)))))  ; Otherwise, continue iterating
+(define time-list '())
+(define new-time-list '())
 
 (define (all-stations-with-times line station1 station2)
+  (define path-list '())
+  (define time-list '())
+  
+  ; Populate path-list and time-list
   (for ([i (hash-ref line 'edges '())])
-    (set! path-list (cons (car i) path-list)))
+    (set! path-list (cons (car i) path-list))
+    (set! time-list (cons (cadr i) time-list)))
 
-  (set! new-path-list (find-path-after-station path-list station1 station2)) ; Populate new-path-list
+  ; Find path and corresponding times
+  (let ((stations-and-times (find-path-and-times path-list time-list station1 station2)))
+    (set! new-path-list (car stations-and-times))
+    (set! new-time-list (cdr stations-and-times)))
 
+  ; Display the result
   (if (null? new-path-list)
       (display "No path found.")
       (begin
@@ -359,10 +374,40 @@
         (display " and ")
         (display station2)
         (display ":\n")
-        (for-each (lambda (station)
-                    (display station)
-                    (display " -> "))
-                 new-path-list))))
+        (display-stations-with-times new-path-list new-time-list)
+        (newline)
+        (display "Total Time: ")
+        (display (total-time new-time-list))
+        (newline))))
+
+
+(define (total-time time-list)
+  (if (null? time-list)
+      0
+      (+ (car time-list) (total-time (cdr time-list)))))
+
+(define (find-path-and-times path-list time-list station1 station2)
+  (let loop ((lst path-list) (times time-list) (found? #f) (result '()) (time-result '()))
+    (cond
+      ((null? lst) (if found? (cons (reverse result) (reverse time-result)) '())) ; If the end of the list is reached, return the result
+      ((equal? (car lst) station1)
+       (loop (cdr lst) (cdr times) #t result (cons (car times) time-result))) ; If station1 is found, set found? to true and accumulate time
+      ((equal? (car lst) station2)
+       (loop '() '() #t (cons (car lst) result) (cons (car times) time-result))) ; If station2 is found, set found? to true and return the result with time
+      (found? (loop (cdr lst) (cdr times) #t (cons (car lst) result) (cons (car times) time-result))) ; If station1 is found and found? is true, accumulate elements
+      (else (loop (cdr lst) (cdr times) #f result time-result))))) ; Otherwise, continue iterating
+
+(define (display-stations-with-times stations times)
+  (if (null? stations)
+      '()
+      (begin
+        (display (car stations))
+        (display " (")
+        (display (car times))
+        (display " minutes) -> ")
+        (display-stations-with-times (cdr stations) (cdr times)))))
+
+
 
 
 
