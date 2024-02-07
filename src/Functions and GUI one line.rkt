@@ -181,13 +181,11 @@
              [label (string-append "Final Station: " (send destination-station get-value) "\nRoute will take: " (number->string (total-time new-time-list)) " minutes")]
              [parent myframe])))
 
-
 (define (initialize-path-msg)
   (set! path-msg
         (new message%
              [label (string-append "Starting Station: " (send start-station get-value))]
              [parent myframe])))
-
 
 (define (initialize-destination-path)
   (set! destination-path
@@ -197,9 +195,6 @@
              [choices new-path-list]
              [selection #f]
              [enabled #f])))
-
-
-
 
 (define (update-destination-path)
   (if (not (equal? destination-path #f))
@@ -291,9 +286,11 @@
 
 (define (replace-edge edges station1 station2 new-time)
   (map (lambda (edge)
-         (if (and (equal? (car edge) station1) (equal? (cadr edge) station2)) ; Check if the current edge matches the specified stations
-             (list station1 station2 new-time) ;If yes create a new edge with updated time if not keep the edges the same
-             edge)) edges))
+         (if (and (equal? (car edge) station1) (equal? (cadr edge) station2))
+             (list station1 new-time)  ; Update only the time of the existing edge
+             edge))
+       edges))
+
 
 ;A function that chooses a random line to strike
 (send strike-warning set-value chosen-line)
