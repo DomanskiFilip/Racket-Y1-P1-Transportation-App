@@ -35,7 +35,7 @@
 ;Window
 (define myframe (new frame%
                      [label "World's best travel app"]
-                     [width 300]
+                     [width 500]
                      [height 100]))
 
 (new message%
