@@ -291,6 +291,7 @@
              edge))
        edges))
 
+
 ;A function that chooses a random line to strike
 (send strike-warning set-value chosen-line)
 (printf "Strikes on: ~a\n" chosen-line)
@@ -314,7 +315,9 @@
     [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
     [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
 
+
 ; main function
+
 (define (create-route line-start station-start line-end station-end)
   (cond [(equal? line-start line-end) (create-route-same-lines line-start station-start station-end)]
         [(create-route-different-lines line-start line-end)]))
@@ -323,6 +326,10 @@
   (cond
     [(equal? line "Northern Line High Barnet via bank") (all-stations-with-times northern-line-high-barnet-via-bank station-start station-end)]
     [(equal? line "Northern Line Edgware via bank") (all-stations-with-times northern-line-edgware-via-bank station-start station-end)]
+    ;   [(equal? line "Northern Line Mill Hill East via Bank") (all-stations-with-times northern-line-mill-hill-east-via-bank station-start station-end)]
+    ;   [(equal? line "Northern Line High Barnet via Warren Street") (all-stations-with-times northern-line-high-barnet-via-warren-street station-start station-end)]
+    ;   [(equal? line "Northern Line Edgware via Warren Street") (all-stations-with-times northern-line-edgware-via-warren-street station-start station-end)]
+    ;   [(equal? line "Northern Line Mill Hill East via Warren Street") (all-stations-with-times northern-line-mill-hill-east-via-warren-street station-start station-end)]
     [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
     [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
     [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
@@ -347,26 +354,11 @@
     (set! path-list (cons (car i) path-list))
     (set! time-list (cons (cadr i) time-list)))
 
-  ; Determine direction
-  (define direction (if (member station1 path-list)
-                        'forward
-                        'backward))
-  
-  ; Reverse lists if traveling backward
-  (when (eq? direction 'backward)
-    (set! path-list (reverse path-list))
-    (set! time-list (reverse time-list)))
-
   ; Find path and corresponding times
-  (let ((stations-and-times (find-path-and-times path-list time-list station1 station2 direction)))
+  (let ((stations-and-times (find-path-and-times path-list time-list station1 station2)))
     (set! new-path-list (car stations-and-times))
     (set! new-time-list (cdr stations-and-times)))
 
-  ; Reverse lists back if traveling backward
-  (when (eq? direction 'backward)
-    (set! new-path-list (reverse new-path-list))
-    (set! new-time-list (reverse new-time-list)))
-    
   ; Display the result
   (if (null? new-path-list)
       (display "No path found.")
@@ -382,21 +374,22 @@
         (display (total-time new-time-list))
         (newline))))
 
+
 (define (total-time time-list)
   (if (null? time-list)
       0
       (+ (car time-list) (total-time (cdr time-list)))))
 
-(define (find-path-and-times path-list time-list station1 station2 direction)
-  (let loop ((lst path-list) (times time-list) (found1? #f) (found2? #f) (result '()) (time-result '()))
+(define (find-path-and-times path-list time-list station1 station2)
+  (let loop ((lst path-list) (times time-list) (found? #f) (result '()) (time-result '()))
     (cond
-      ((null? lst) (if (and found1? found2?) (cons (reverse result) (reverse time-result)) '())) ; If the end of the list is reached, return the result
+      ((null? lst) (if found? (cons (reverse result) (reverse time-result)) '())) ; If the end of the list is reached, return the result
       ((equal? (car lst) station1)
-       (loop (cdr lst) (cdr times) #t found2? result (cons (car times) time-result))) ; If station1 is found, set found1? to true and accumulate time
+       (loop (cdr lst) (cdr times) #t result (cons (car times) time-result))) ; If station1 is found, set found? to true and accumulate time
       ((equal? (car lst) station2)
-       (loop (cdr lst) (cdr times) found1? #t (cons (car lst) result) (cons (car times) time-result))) ; If station2 is found, set found2? to true and return the result with time
-      (found1? (loop (cdr lst) (cdr times) #t found2? (cons (car lst) result) (cons (car times) time-result))) ; If station1 is found and found1? is true, accumulate elements
-      (else (loop (cdr lst) (cdr times) found1? found2? result time-result))))) ; Otherwise, continue iterating
+       (loop '() '() #t (cons (car lst) result) (cons (car times) time-result))) ; If station2 is found, set found? to true and return the result with time
+      (found? (loop (cdr lst) (cdr times) #t (cons (car lst) result) (cons (car times) time-result))) ; If station1 is found and found? is true, accumulate elements
+      (else (loop (cdr lst) (cdr times) #f result time-result))))) ; Otherwise, continue iterating
 
 (define (display-stations-with-times stations times)
   (if (null? stations)
