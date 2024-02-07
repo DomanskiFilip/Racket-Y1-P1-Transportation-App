@@ -4,14 +4,19 @@
 
 ;GUI
 
-(define lines '("Northern Line" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
+(define lines '("Northern Line High Barnet via bank" "Northern Line Mill Hill East via bank" "Northern Line Edgware via bank" "Northern Line High Barnet via warren street" "Northern Line Mill Hill East via warren street" "Northern Line Edgware via warren street" "Bakerloo Line" "Central Line" "Circle Line" "District Line" "Hammersmith City Line" "Jubilee Line" "Metropolitan Line" "Piccadilly Line" "Victoria Line"))
 (define chosen-line (list-ref lines (random (length lines))))
 (define start-stations-list '())
 
 ;Get stations
 (define (get-stations start-line-v)
   (cond
-    [(equal? start-line-v "Northern Line") (add-to-stations-list northern-line)]
+    [(equal? start-line-v "Northern Line High Barnet via bank") (add-to-stations-list northern-line-high-barnet-via-bank)]
+    [(equal? start-line-v "Northern Line Edgware via bank") (add-to-stations-list northern-line-edgware-via-bank)]
+    [(equal? start-line-v "Northern Line Mill Hill East via bank") (add-to-stations-list northern-line-mill-hill-east-via-bank)]
+    [(equal? start-line-v "Northern Line High Barnet via warren street") (add-to-stations-list northern-line-high-barnet-via-warren-street)]
+    [(equal? start-line-v "Northern Line Edgware via warren street") (add-to-stations-list northern-line-mill-hill-east-via-warren-street)]
+    [(equal? start-line-v "Northern Line Mill Hill East via warren street") (add-to-stations-list northern-line-edgware-via-warren-street)]
     [(equal? start-line-v "Bakerloo Line") (add-to-stations-list bakerloo-line)]    
     [(equal? start-line-v "Central Line") (add-to-stations-list central-line)]    
     [(equal? start-line-v "District Line") (add-to-stations-list district-line)] 
@@ -287,7 +292,12 @@
 ;If Northern Line is chosen then strike Northern Line, if Bakerloo Line is chosen then strike Bakerloo Line etc.
 (define (randomize-line-strike)
       (cond
-        [(equal? chosen-line "Northern Line") (randomize-strike northern-line)]
+        [(equal? chosen-line "Northern Line High Barnet via bank") (randomize-strike northern-line-high-barnet-via-bank)]
+        [(equal? chosen-line "Northern Line Edgware via Bank") (randomize-strike northern-line-edgware-via-bank)]
+        [(equal? chosen-line "Northern Line Mill Hill East via Bank") (randomize-strike northern-line-mill-hill-east-via-bank)]
+        [(equal? chosen-line "Northern Line High Barnet via Warren Street") (randomize-strike northern-line-high-barnet-via-warren-street)]
+        [(equal? chosen-line "Northern Line Edgware via Warren Street") (randomize-strike northern-line-edgware-via-warren-street)]
+        [(equal? chosen-line "Northern Line Mill Hill East via Warren Street") (randomize-strike northern-line-mill-hill-east-via-warren-street)]
         [(equal? chosen-line "Bakerloo Line") (randomize-strike bakerloo-line)]
         [(equal? chosen-line "Central Line") (randomize-strike central-line)]
         [(equal? chosen-line "Circle Line") (randomize-strike circle-line)]
@@ -307,7 +317,12 @@
 
 (define (create-route-same-lines line station-start station-end)
       (cond
-        [(equal? line "Northern Line") (all-stations-with-times northern-line station-start station-end)]
+        [(equal? line "Northern Line High Barnet via bank") (all-stations-with-times northern-line-high-barnet-via-bank station-start station-end)]
+        [(equal? line "Northern Line Edgware via Bank") (all-stations-with-times northern-line-edgware-via-bank station-start station-end)]
+        [(equal? line "Northern Line Mill Hill East via Bank") (all-stations-with-times northern-line-mill-hill-east-via-bank station-start station-end)]
+        [(equal? line "Northern Line High Barnet via Warren Street") (all-stations-with-times northern-line-high-barnet-via-warren-street station-start station-end)]
+        [(equal? line "Northern Line Edgware via Warren Street") (all-stations-with-times northern-line-edgware-via-warren-street station-start station-end)]
+        [(equal? line "Northern Line Mill Hill East via Warren Street") (all-stations-with-times northern-line-mill-hill-east-via-warren-street station-start station-end)]
         [(equal? line "Bakerloo Line") (all-stations-with-times bakerloo-line station-start station-end)]
         [(equal? line "Central Line") (all-stations-with-times central-line station-start station-end)]
         [(equal? line "Circle Line") (all-stations-with-times circle-line station-start station-end)]
