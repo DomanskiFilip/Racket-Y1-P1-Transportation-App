@@ -342,7 +342,6 @@
     [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
     [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
 
-
 (define path-list '())
 (define new-path-list '())
 (define time-list '())
