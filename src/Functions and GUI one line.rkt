@@ -314,9 +314,18 @@
     [(equal? chosen-line "Piccadilly Line") (randomize-strike piccadilly-line)]
     [(equal? chosen-line "Victoria Line") (randomize-strike victoria-line)]))
 
+(randomize-line-strike)
+
 ; main function
 (define (create-route line-start station-start line-end station-end)
-  (cond [(equal? line-start line-end) (create-route-same-lines line-start station-start station-end)]
+  (cond [(equal? line-start line-end) 
+         (let ((forward-route (create-route-same-lines line-start station-start station-end))
+               (backward-route (create-route-same-lines line-start station-end station-start)))
+           (if (null? forward-route)
+               (if (null? backward-route)
+                   (display "No path found.")
+                   backward-route)
+               forward-route))]
         [(create-route-different-lines line-start line-end)]))
 
 (define (create-route-same-lines line station-start station-end)
@@ -332,6 +341,7 @@
     [(equal? line "Metropolitan Line") (all-stations-with-times metropolitan-line station-start station-end)]
     [(equal? line "Piccadilly Line") (all-stations-with-times piccadilly-line station-start station-end)]
     [(equal? line "Victoria Line") (all-stations-with-times victoria-line station-start station-end)]))
+
 
 (define path-list '())
 (define new-path-list '())
@@ -412,5 +422,3 @@
   (printf "create-route-different-lines")
   (display line-start)
   (display line-end))
-
-(randomize-line-strike)
