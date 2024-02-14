@@ -397,12 +397,8 @@
                     [callback (lambda (button event)
                                 (on-button-click))]))
 
-(define msg (new message% [parent frame]
-                 [label "Final route and time:"]))
-
-
 (define text-output (new text-field% [parent frame]
-                         [label " "]
+                         [label "Output will be displayed here"]
                          [style '(multiple)]
                          [min-height 200]
                          [stretchable-height #t]))
