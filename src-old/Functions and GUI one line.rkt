@@ -192,7 +192,7 @@
         (new radio-box%
              [label " "]
              [parent myframe]
-             [choices new-path-list]
+             [choices (reverse new-path-list)]
              [selection #f]
              [enabled #f])))
 
@@ -316,6 +316,11 @@
 
 (randomize-line-strike)
 
+(define (create-route-different-lines line-start line-end)
+  (let ((start-station (car (hash-ref line-start 'edges '())))) ; Get the first station of line-start
+    (create-route-same-lines line-start start-station (car (hash-ref line-end 'edges '()))))) ; Pass start-station as station-start and the first station of line-end as station-end
+
+
 ; main function
 (define (create-route line-start station-start line-end station-end)
   (cond [(equal? line-start line-end) 
@@ -347,17 +352,27 @@
 (define time-list '())
 (define new-time-list '())
 
+
+(define (position item lst)
+  (let loop ((lst lst) (index 0))
+    (cond
+      [(null? lst) #f] ; If the list is empty, return #f indicating item not found
+      [(equal? item (car lst)) index] ; If the item is found, return the current index
+      [else (loop (cdr lst) (+ index 1))]))) ; Recursively search for the item in the rest of the list, incrementing the index
+
+
+
 (define (all-stations-with-times line station1 station2)
-  (define path-list '())
-  (define time-list '())
+  (set! new-path-list '())  ; Reset new-path-list
+  (set! new-time-list '())  ; Reset new-time-list
   
   ; Populate path-list and time-list
   (for ([i (hash-ref line 'edges '())])
     (set! path-list (cons (car i) path-list))
     (set! time-list (cons (cadr i) time-list)))
 
-  ; Determine direction
-  (define direction (if (member station1 path-list)
+  ; Determine direction based on station1 and station2 positions in path-list
+  (define direction (if (< (length (member station1 path-list)) (length (member station2 path-list)))
                         'forward
                         'backward))
   
@@ -366,16 +381,23 @@
     (set! path-list (reverse path-list))
     (set! time-list (reverse time-list)))
 
-  ; Find path and corresponding times
-  (let ((stations-and-times (find-path-and-times path-list time-list station1 station2 direction)))
-    (set! new-path-list (car stations-and-times))
-    (set! new-time-list (cdr stations-and-times)))
-
-  ; Reverse lists back if traveling backward
-  (when (eq? direction 'backward)
-    (set! new-path-list (reverse new-path-list))
-    (set! new-time-list (reverse new-time-list)))
+  ; Find index range based on direction and station positions
+  (let* ((index-start (position station1 path-list))
+         (index-end (position station2 path-list))
+         (index-range (if (eq? direction 'forward)
+                          (range index-start (+ index-end 1))
+                          (range index-end (+ index-start 1)))))
     
+    ; Extract stations and times within the index range
+    (let ((stations-and-times (map (lambda (index) (list (list-ref path-list index) (list-ref time-list index))) index-range)))
+      (set! new-path-list (map car stations-and-times))
+      (set! new-time-list (map cadr stations-and-times)))
+    
+    ; Reverse lists back if traveling backward
+    (when (eq? direction 'backward)
+      (set! new-path-list (reverse new-path-list))
+      (set! new-time-list (reverse new-time-list))))
+  
   ; Display the result
   (if (null? new-path-list)
       (display "No path found.")
@@ -390,6 +412,8 @@
         (display "Total Time: ")
         (display (total-time new-time-list))
         (newline))))
+
+
 
 (define (total-time time-list)
   (if (null? time-list)
@@ -416,8 +440,3 @@
         (display (car times))
         (display " minutes) -> ")
         (display-stations-with-times (cdr stations) (cdr times)))))
-
-(define (create-route-different-lines line-start line-end)
-  (printf "create-route-different-lines")
-  (display line-start)
-  (display line-end))
